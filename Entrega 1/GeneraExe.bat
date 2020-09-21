@@ -1,4 +1,4 @@
-c:\GnuWin32\bin\flex Prueba_Lexico.l
+c:\GnuWin32\bin\flex lexico.l
 pause
 c:\MinGW\bin\gcc.exe lex.yy.c -o TPFinal.exe
 pause
