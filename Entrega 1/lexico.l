@@ -20,7 +20,7 @@ LETRA                    [a-zA-Z]
 DELIM                    [ \t\n\r]
 CARACTER                 [a-z|A-Z|0-9|=|>|<|!|:|+|-|*|/|?|¿|!|¡|@|%|#|&|°|´|^|`|~|/|\\|-|_|.|,|;|¬||]
 VALID_STRING             ({CARACTER}+|{DELIM})*
-COMENTARIO               --\/.({CARACTER}|{DELIM})*.\/--
+COMENTARIO               \*-.({CARACTER}|{DELIM})*.-\*
 
 CTE_STRING               \"{VALID_STRING}\"
 CTE_REAL                 -?{DIGITO}+"."{DIGITO}*
@@ -46,10 +46,30 @@ MAXIMO                   [Mm][Aa][Xx][Ii][Mm][Oo]
 
 
 %%
-.                        yyerror();
+
+"+"                      { return OP_SUMA; }
+"-"                      { return OP_RESTA; }
+"*"                      { return OP_MULT; }
+"/"                      { return OP_DIV; }
+"="	                     { return ASIG; }
+"("                      { return P_A; }
+")"                      { return P_C; }
+"["                      { return C_A; }
+"]"                      { return C_C; }
+";"                      { return PUNTO_COMA; }
+","                      { return COMA; }
+":"                      { return DOS_PUNTOS; }
+"_"                      { return GUION_BAJO; }
+" "
+"\t"
+"\n"
+{COMENTARIO}
+<<EOF>>                  { yyterminate(); }
+.                        { yyerror(); }
+
 %%
 
-int yyerror(void)
+int yyerror()
 {
     printf("Error léxico: linea %d  %s\n", yylineno, yytext);
     system ("Pause");
