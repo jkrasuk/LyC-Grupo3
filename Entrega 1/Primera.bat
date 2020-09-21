@@ -1,6 +1,6 @@
-flex lexico.l
+flex Lexico.l
 pause
-bison -dyv sintactico.y
+bison -dyv Sintactico.y
 pause
 gcc.exe lex.yy.c -o Entrega1.exe
 pause
