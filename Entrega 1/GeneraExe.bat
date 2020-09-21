@@ -1,9 +1,14 @@
-c:\GnuWin32\bin\flex lexico.l
+flex lexico.l
 pause
-c:\MinGW\bin\gcc.exe lex.yy.c -o TPFinal.exe
+bison -dyv sintactico.y
+pause
+gcc.exe lex.yy.c -o Entrega1.exe
 pause
 pause
-TPfinal.exe Prueba.txt
+Entrega1.exe prueba.txt
 del lex.yy.c
-del TPFinal.exe
+del y.tab.c
+del y.output
+del y.tab.h
+del Entrega1.exe
 pause
