@@ -3,13 +3,14 @@
 #include <stdlib.h>
 #include <conio.h>
 #include "y.tab.h"
+
 FILE *  yyin;
 int     yylval;
 char *  yyltext;
 
-  void validarLimitesConstanteString();
-  void validarLimitesConstanteReal();
-  void validarLimitesConstanteInt();
+void validarLimitesConstanteString();
+void validarLimitesConstanteReal();
+void validarLimitesConstanteInt();
   
 %}
 %option noyywrap
@@ -51,7 +52,7 @@ MAXIMO                   [Mm][Aa][Xx][Ii][Mm][Oo]
 "-"                      { return OP_RESTA; }
 "*"                      { return OP_MULT; }
 "/"                      { return OP_DIV; }
-"="	                     { return ASIG; }
+"="                      { return ASIG; }
 "("                      { return P_A; }
 ")"                      { return P_C; }
 "["                      { return C_A; }
@@ -60,6 +61,28 @@ MAXIMO                   [Mm][Aa][Xx][Ii][Mm][Oo]
 ","                      { return COMA; }
 ":"                      { return DOS_PUNTOS; }
 "_"                      { return GUION_BAJO; }
+{DIM}                    { return DIM; }
+{AS}                     { return AS; }
+{INTEGER}                { return INTEGER; }
+{FLOAT}                  { return FLOAT; }
+{STRING}                 { return STRING; }
+{CONST}                  { return CONST; }
+{PUT}                    { return PUT; }
+{GET}                    { return GET; }
+{WHILE}                  { return WHILE; }
+{IF}                     { return IF; }
+{ENDIF}                  { return ENDIF; }
+{ELSE}                   { return ELSE; }
+{AND}                    { return AND; }
+{OR}                     { return OR; }
+{NOT}                    { return NOT; }
+{MAXIMO}                 { return MAXIMO; }
+">"                      { return MAYOR; }
+">="                     { return MAYOR_IGUAL; }
+"<"                      { return MENOR; }
+"<="                     { return MENOR_IGUAL; }
+"=="                     { return IGUAL; }
+"!="                     { return DISTINTO; }
 " "
 "\t"
 "\n"
