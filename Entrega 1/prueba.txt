@@ -3,21 +3,22 @@ CONST nombre=85;
 PUT "Prueba.txt LyC Tema 3!";
 PUT "Ingrese un valor entero para actual: ";
 GET actual;
-contador: 0;
-suma: 02.5+nombre;
+contador = 0;
+suma = 02.5+nombre;
 while (contador <= 9) {
-contador: contador + 1;
-actual: (contador/0.342) + (contador* maximo (actual*contador, 2,
-actual*pivot,máximo (4,actual,nombre) ) );
-suma: suma + actual;
+	contador = contador + 1;
+	actual = (contador/0.342) + (contador* maximo (actual*contador, 2, actual*pivot,máximo (4,actual,nombre)));
+	suma = suma + actual;
 }
+
 PUT "La suma es: ";
 PUT suma;
+
 if (actual > 2 and actual <> 0){
-PUT "actual es mayor que 2 y distinto de cero";
+	PUT "actual es mayor que 2 y distinto de cero";
 }
 Else
-}
-if (actual < nombre)
-PUT "no es mayor que 2"
+{
+	if (actual < nombre)
+		PUT "no es mayor que 2"
 }
