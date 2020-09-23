@@ -54,6 +54,8 @@ MAXIMO									[Mm][Aa][Xx][Ii][Mm][Oo]
 "="										{ return ASIG; }
 "("										{ return P_A; }
 ")"										{ return P_C; }
+"{"										{ return L_A; }
+"}"										{ return L_C; }
 "["										{ return C_A; }
 "]"										{ return C_C; }
 ";"										{ return PUNTO_COMA; }

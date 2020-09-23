@@ -19,8 +19,10 @@ extern FILE* yyin;
 %token GUION_BAJO COMA PUNTO_COMA DOS_PUNTOS
 %token IF ELSE ENDIF
 %token DIM AS
-%token P_A P_C C_A C_C
+%token CONST
+%token P_A P_C C_A C_C L_A L_C
 %token PUT GET
+%token WHILE
 %token MAXIMO
 %left OP_SUMA
 %left OP_RESTA
@@ -34,7 +36,7 @@ extern FILE* yyin;
 %left MENOR_IGUAL
 %left OR
 %left AND
-%start programa
+
 %type <intVal> CTE_INT
 %type <floatVal> CTE_REAL
 %type <strVal> CTE_STRING
@@ -42,51 +44,78 @@ extern FILE* yyin;
 
 %type <auxLogicOperator> logic_operator
 %type <auxLogicOperator> logic_concatenator
-
-%union 
-{
-  int intVal;
-  float floatVal;
-  char strVal[30];
-  char* auxLogicOperator;
-}
+%start programa
 
 %%
-programa: sentencia_declaracion {printf("\n Regla - COMPILACION EXITOSA\n");}
+
+programa: sentencia_declaracion {printf("\n Regla: COMPILACION EXITOSA\n");}
   ;
 
-sentencia_declaracion: bloque_declaracion_variables {printf("\n Regla: sentencia: bloque_declaracion_variables \n");}
+sentencia_declaracion: bloque_declaracion_variables bloque {printf("\n Regla - sentencia: bloque_declaracion_variables bloque \n");}
+  | bloque_declaracion_variables {printf("\n Regla - sentencia: bloque_declaracion_variables \n");}
   ;
 
-bloque_declaracion_variables: DIM MENOR declaracion_variables MAYOR AS MENOR tipos_variables MAYOR {printf("\n Regla: bloque_declaracion_variables: DIM MENOR declaracion_variables MAYOR AS MENOR tipos_variables MAYOR \n");}
+bloque_declaracion_variables: DIM MENOR lista_variables MAYOR AS MENOR tipos_variables MAYOR {printf("\n Regla - bloque_declaracion_variables: DIM MENOR declaracion_variables MAYOR AS MENOR tipos_variables MAYOR \n");}
   ;
 
-put: PUT ID {printf("\n Regla: print: PRINT ID \n");}
-  | put CTE_INT {printf("\n Regla: print: PRINT CTE_INT \n");}
-  | put CTE_REAL {printf("\n Regla: print: PRINT CTE_REAL \n");}
-  | put CTE_STRING {printf("\n Regla: print: PRINT CTE_STRING \n");}
+lista_variables: lista_variables COMA ID {printf("\n Regla - lista_variables: lista_variables COMA ID \n");}
+  ;
+
+tipos_variables: tipos_variables COMA tipo_variable {printf("\n Regla - lista_variables: lista_variables COMA Itipo_variable \n");}
+;
+tipo_variable: INTEGER {printf("\n Regla - tipo_variable: INTEGER \n");}
+  | FLOAT {printf("\n Regla - tipo_variable: FLOAT \n");}
+  | STRING {printf("\n Regla - tipo_variable: STRING \n");}
+  ;
+
+bloque: sentencia {printf("\n Regla - bloque: sentencia \n");}
+  | bloque sentencia {printf("\n Regla - bloque: bloque sentencia \n");}
+  ;
+
+sentencia: decision {printf("\n Regla - sentencia: decision \n");}
+  | asignacion {printf("\n Regla - sentencia: asignacion \n");}
+  | put {printf("\n Regla - sentencia: put \n");}
+  | get {printf("\n Regla - sentencia: get \n");}
+  | iteracion {printf("\n Regla - sentencia: iteracion \n");}
+  | asignacion_constante  {printf(" Regla - asignacion_constante OK\n");}
+  ;
+
+decision: IF P_A condicion P_C bloque ELSE bloque ENDIF {printf("\n Regla - decision: IF P_A condicion P_C bloque ELSE bloque ENDIF \n");}
+  | IF P_A condicion P_C bloque ENDIF {printf("\n Regla - decision: IF P_A condicion P_C bloque ENDIF \n");}
+  ;
+
+asignacion: ID ASIG expresion {printf("\n Regla - asignacion: ID ASIG expresion \n");};
+
+asignacion_constante: CONST ID ASIG expresion {printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");};
+
+iteracion: WHILE P_A condicion P_C L_A bloque L_C {printf("\n Regla - iteracion: WHILE P_A condicion P_C L_A bloque L_C \n");};
+
+put: PUT ID {printf("\n Regla - put: PUT ID \n");}
+  | put CTE_INT {printf("\n Regla - put: PUT CTE_INT \n");}
+  | put CTE_REAL {printf("\n Regla - put: PUT CTE_REAL \n");}
+  | put CTE_STRING {printf("\n Regla - put: PUT CTE_STRING \n");}
   ;
    
-get: GET ID {printf("\n Regla: read: GET ID \n");};
+get: GET ID {printf("\n Regla - get: GET ID \n");};
 
-condicion: comparacion {printf("\n Regla: condicion: comparacion \n");}
-  | comparacion logic_concatenator comparacion {printf("\n Regla: condicion: comparacion logic_concatenator comparacion \n");}
-  | NOT P_A comparacion P_C {printf("\n Regla: condicion: NOT comparacion \n");}
+condicion: comparacion {printf("\n Regla - condicion: comparacion \n");}
+  | comparacion logic_concatenator comparacion {printf("\n Regla - condicion: comparacion logic_concatenator comparacion \n");}
+  | NOT P_A comparacion P_C {printf("\n Regla - condicion: NOT comparacion \n");}
   ;
 
-comparacion: expresion  logic_operator  expresion {printf("\n Regla: comparacion: expresion  logic_operator  expresion \n");}
+comparacion: expresion  logic_operator  expresion {printf("\n Regla - comparacion: expresion  logic_operator  expresion \n");}
   ;
 
-logic_operator: IGUAL {printf("\n Regla: logic_operator: IGUAL \n");}
-  | DISTINTO {printf("\n Regla: logic_operator: DISTINTO \n");}
-  | MAYOR {printf("\n Regla: logic_operator: MAYOR \n");}
-  | MAYOR_IGUAL {printf("\n Regla: logic_operator: MAYOR_IGUAL \n");}
-  | MENOR {printf("\n Regla: logic_operator: MENOR \n");}
-  | MENOR_IGUAL {printf("\n Regla: logic_operator: MENOR_IGUAL \n");}
+logic_operator: IGUAL {printf("\n Regla - logic_operator: IGUAL \n");}
+  | DISTINTO {printf("\n Regla - logic_operator: DISTINTO \n");}
+  | MAYOR {printf("\n Regla - logic_operator: MAYOR \n");}
+  | MAYOR_IGUAL {printf("\n Regla - logic_operator: MAYOR_IGUAL \n");}
+  | MENOR {printf("\n Regla - logic_operator: MENOR \n");}
+  | MENOR_IGUAL {printf("\n Regla - logic_operator: MENOR_IGUAL \n");}
   ;
 
-logic_concatenator: OR {printf("\n Regla: logic_concatenator: OR \n");}
-  | AND {printf("\n Regla: logic_concatenator: AND \n");}
+logic_concatenator: OR {printf("\n Regla - logic_concatenator: OR \n");}
+  | AND {printf("\n Regla - logic_concatenator: AND \n");}
   ;
 
 expresion: expresion OP_SUMA termino {printf("\n Regla - expresion: expresion OP_SUMA termino\n");}
@@ -111,7 +140,7 @@ factor: ID {printf("\n Regla - factor: ID \n");}
 int main(int argc, char *argv[]) 
 {
     yyin = fopen(argv[1], "r");
-      yydebug = 0;
+      yydebug = 1;
   printf("COMENZANDO COMPILACION\n");
     do 
   {
