@@ -83,9 +83,9 @@ MAXIMO									[Mm][Aa][Xx][Ii][Mm][Oo]
 "<"										{ return MENOR; }
 "<="									{ return MENOR_IGUAL; }
 "=="									{ return IGUAL; }
-"!="									{ return DISTINTO; }
+"<>"									{ return DISTINTO; }
 {FLOAT}									{ strcpy(yylval.strVal, yytext); return FLOAT;}
-{INTEGER}								{ strcpy(yylval.strVal, yytext); return INT; }
+{INTEGER}								{ strcpy(yylval.strVal, yytext); return INTEGER; }
 {STRING}								{ strcpy(yylval.strVal, yytext); return STRING; }
 {CTE_INT}								{ validarLimitesConstanteInt(); yylval.intVal = atoi(substringIfNeeded()); insert(yytext); return CTE_INT; }
 {CTE_STRING}							{ validarLimitesConstanteString(); strcpy(yylval.strVal, yytext); insert(yytext); return CTE_STRING; }
@@ -96,7 +96,6 @@ MAXIMO									[Mm][Aa][Xx][Ii][Mm][Oo]
 "\n"
 {COMENTARIO}
 <<EOF>>									{ yyterminate(); }
-.										{ yyerror(); }
 %%
 
 void validarLimitesConstanteString() 

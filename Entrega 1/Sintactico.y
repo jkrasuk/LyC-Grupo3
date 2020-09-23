@@ -88,15 +88,17 @@ asignacion: ID ASIG expresion {printf("\n Regla - asignacion: ID ASIG expresion 
 
 asignacion_constante: CONST ID ASIG expresion {printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");};
 
-iteracion: WHILE P_A condicion P_C L_A bloque L_C {printf("\n Regla - iteracion: WHILE P_A condicion P_C L_A bloque L_C \n");};
+iteracion: WHILE P_A condicion P_C L_A bloque L_C {printf("\n Regla - iteracion: WHILE P_A condicion P_C L_A bloque L_C \n");}
+  ;
 
 put: PUT ID {printf("\n Regla - put: PUT ID \n");}
-  | put CTE_INT {printf("\n Regla - put: PUT CTE_INT \n");}
-  | put CTE_REAL {printf("\n Regla - put: PUT CTE_REAL \n");}
-  | put CTE_STRING {printf("\n Regla - put: PUT CTE_STRING \n");}
+  | PUT CTE_INT {printf("\n Regla - put: PUT CTE_INT \n");}
+  | PUT CTE_REAL {printf("\n Regla - put: PUT CTE_REAL \n");}
+  | PUT CTE_STRING {printf("\n Regla - put: PUT CTE_STRING \n");}
   ;
    
-get: GET ID {printf("\n Regla - get: GET ID \n");};
+get: GET ID {printf("\n Regla - get: GET ID \n");}
+  ;
 
 condicion: comparacion {printf("\n Regla - condicion: comparacion \n");}
   | comparacion logic_concatenator comparacion {printf("\n Regla - condicion: comparacion logic_concatenator comparacion \n");}
