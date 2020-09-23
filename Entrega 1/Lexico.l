@@ -10,7 +10,6 @@ void validarLimitesConstanteString();
 void validarLimitesConstanteReal();
 void validarLimitesConstanteInt();
 void validarID();
-char* substringIfNeeded();
 %}
 %option noyywrap
 %option yylineno
@@ -64,9 +63,6 @@ MAXIMO									[Mm][Aa][Xx][Ii][Mm][Oo]
 "_"										{ return GUION_BAJO; }
 {DIM}									{ return DIM; }
 {AS}									{ return AS; }
-{INTEGER}								{ return INTEGER; }
-{FLOAT}									{ return FLOAT; }
-{STRING}								{ return STRING; }
 {CONST}									{ return CONST; }
 {PUT}									{ return PUT; }
 {GET}									{ return GET; }
@@ -87,10 +83,10 @@ MAXIMO									[Mm][Aa][Xx][Ii][Mm][Oo]
 {FLOAT}									{ strcpy(yylval.strVal, yytext); return FLOAT;}
 {INTEGER}								{ strcpy(yylval.strVal, yytext); return INTEGER; }
 {STRING}								{ strcpy(yylval.strVal, yytext); return STRING; }
-{CTE_INT}								{ validarLimitesConstanteInt(); yylval.intVal = atoi(substringIfNeeded()); insert(yytext); return CTE_INT; }
-{CTE_STRING}							{ validarLimitesConstanteString(); strcpy(yylval.strVal, yytext); insert(yytext); return CTE_STRING; }
-{CTE_REAL}								{ validarLimitesConstanteReal(); yylval.floatVal = atof(yytext); insert(yytext); return CTE_REAL; }
-{ID}									{ strcpy(yylval.strVal, yytext); validarID(); insert(yytext); return INTEGER; }
+{CTE_INT}							{ validarLimitesConstanteInt(); yylval.intVal = atoi(yytext);  return CTE_INT; }
+{CTE_STRING}							{ validarLimitesConstanteString(); strcpy(yylval.strVal, yytext);  return CTE_STRING; }
+{CTE_REAL}								{ validarLimitesConstanteReal(); yylval.floatVal = atof(yytext);  return CTE_REAL; }
+{ID}									{ strcpy(yylval.strVal, yytext); validarID();  return ID; }
 " "
 "\t"
 "\n"
@@ -137,29 +133,9 @@ void validarID()
 	}
 }
 
-char* substringIfNeeded() 
+int yyerror(void)
 {
-	char* yyTextCopy = strdup(yytext);
- 
-	if(yyTextCopy[0] == '0') 
-	{
-		if(yyTextCopy[1] == 'b') 
-		{
-				yyTextCopy= (char*) substring(yyTextCopy, 3, strlen(yyTextCopy));
-				int transformedValue = (int) strtol(yyTextCopy, NULL, 2);
-				itoa(transformedValue, yyTextCopy, 10);
-		} 
-		else if(yyTextCopy[1] == 'x') 
-		{
-				yyTextCopy = (char*) substring(yyTextCopy, 3, strlen(yyTextCopy));
-				int transformedValue = (int) strtol(yyTextCopy, NULL, 16);
-				itoa(transformedValue, yyTextCopy, 10);
-		}	
-	}
-	return yyTextCopy;
-}
-
-void yyerror (char const *s) 
-{
-	 fprintf (stderr, "%s\n", s);
+	printf("Syntax Error\n");
+	system ("Pause");
+	exit (1);
 }
