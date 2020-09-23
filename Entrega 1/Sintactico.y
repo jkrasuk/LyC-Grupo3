@@ -58,11 +58,14 @@ sentencia_declaracion: bloque_declaracion_variables bloque {printf("\n Regla - s
 bloque_declaracion_variables: DIM MENOR lista_variables MAYOR AS MENOR tipos_variables MAYOR {printf("\n Regla - bloque_declaracion_variables: DIM MENOR declaracion_variables MAYOR AS MENOR tipos_variables MAYOR \n");}
   ;
 
-lista_variables: lista_variables COMA ID {printf("\n Regla - lista_variables: lista_variables COMA ID \n");}
+lista_variables: ID {printf("\n Regla - lista_variables: ID \n");}
+|lista_variables COMA ID {printf("\n Regla - lista_variables: lista_variables COMA ID \n");}
   ;
 
-tipos_variables: tipos_variables COMA tipo_variable {printf("\n Regla - lista_variables: lista_variables COMA Itipo_variable \n");}
+tipos_variables: tipo_variable {printf("\n Regla - lista_variables: Itipo_variable \n");} |
+tipos_variables COMA tipo_variable {printf("\n Regla - lista_variables: lista_variables COMA Itipo_variable \n");}
 ;
+
 tipo_variable: INTEGER {printf("\n Regla - tipo_variable: INTEGER \n");}
   | FLOAT {printf("\n Regla - tipo_variable: FLOAT \n");}
   | STRING {printf("\n Regla - tipo_variable: STRING \n");}
