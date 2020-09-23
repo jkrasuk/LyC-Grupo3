@@ -78,8 +78,8 @@ tipo_variable: INTEGER {printf("\n Regla - tipo_variable: INTEGER \n");}
   | STRING {printf("\n Regla - tipo_variable: STRING \n");}
   ;
 
-bloque: sentencia {printf("\n Regla - bloque: sentencia \n");}
-  | bloque sentencia {printf("\n Regla - bloque: bloque sentencia \n");}
+bloque: sentencia PUNTO_COMA {printf("\n Regla - bloque: sentencia \n");}
+  | bloque sentencia PUNTO_COMA {printf("\n Regla - bloque: bloque sentencia \n");}
   ;
 
 sentencia: decision {printf("\n Regla - sentencia: decision \n");}
@@ -152,7 +152,7 @@ factor: ID {printf("\n Regla - factor: ID \n");}
 int main(int argc, char *argv[]) 
 {
   yyin = fopen(argv[1], "r");
-  yydebug = 0;
+  yydebug = 1;
 
   printf("COMENZANDO COMPILACION\n");
   do 

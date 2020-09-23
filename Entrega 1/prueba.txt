@@ -1,7 +1,7 @@
 DIM < contador,promedio,actual,suma> AS < Integer,Float,Float,Float >
 CONST nombre=85;
 PUT "Prueba.txt LyC Tema 3!";
-PUT "Ingrese un valor entero para actual: ";
+PUT "Ingrese valor actual: ";
 GET actual;
 contador = 0;
 suma = 02.5+nombre;
