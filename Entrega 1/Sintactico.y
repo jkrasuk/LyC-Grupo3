@@ -2,13 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #define YYDEBUG 1
 extern int yylex();
 extern int yyparse();
-extern int yylineno;
 extern FILE* yyin;
-
+    void yyerror(const char *s);
+    extern int yylineno;
+    extern int column;
+    extern char *lineptr;
+    #define YYERROR_VERBOSE 1
 %}
 
 %token ID CTE_INT CTE_STRING CTE_REAL
@@ -80,6 +82,8 @@ tipo_variable: INTEGER {printf("\n Regla - tipo_variable: INTEGER \n");}
 
 bloque: sentencia PUNTO_COMA {printf("\n Regla - bloque: sentencia \n");}
   | bloque sentencia PUNTO_COMA {printf("\n Regla - bloque: bloque sentencia \n");}
+  | bloque sentencia {printf("\n Regla - bloque: bloque sentencia \n");}
+  | sentencia {printf("\n Regla - bloque: sentencia \n");}
   ;
 
 sentencia: decision {printf("\n Regla - sentencia: decision \n");}
@@ -90,13 +94,21 @@ sentencia: decision {printf("\n Regla - sentencia: decision \n");}
   | asignacion_constante  {printf(" Regla - asignacion_constante OK\n");}
   ;
 
-decision: IF P_A condicion P_C bloque ELSE bloque ENDIF {printf("\n Regla - decision: IF P_A condicion P_C bloque ELSE bloque ENDIF \n");}
-  | IF P_A condicion P_C bloque ENDIF {printf("\n Regla - decision: IF P_A condicion P_C bloque ENDIF \n");}
+decision: IF P_A condicion P_C L_A bloque L_C ELSE L_A bloque L_C {printf("\n Regla - decision: IF P_A condicion P_C L_A bloque L_C ELSE L_A bloque L_C \n");}
+  | IF P_A condicion P_C L_A bloque L_C {printf("\n Regla - decision: IF P_A condicion P_C L_A bloque L_C \n");}
   ;
 
 asignacion: ID ASIG expresion {printf("\n Regla - asignacion: ID ASIG expresion \n");};
 
 asignacion_constante: CONST ID ASIG expresion {printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");};
+
+lista_expresiones: lista_expresiones COMA termino {printf("\n Regla - lista_expresiones:  lista_expresiones COMA termino \n");}
+  ;
+lista_expresiones: termino {printf("\n Regla - lista_expresiones: termino \n");}
+ ;
+
+maximo: MAXIMO P_A lista_expresiones P_C {printf("\n Regla - maximo: MAXIMO P_A lista_expresiones P_C \n");}
+  ;
 
 iteracion: WHILE P_A condicion P_C L_A bloque L_C {printf("\n Regla - iteracion: WHILE P_A condicion P_C L_A bloque L_C \n");}
   ;
@@ -145,6 +157,7 @@ factor: ID {printf("\n Regla - factor: ID \n");}
   | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n");}
   | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n");}
   | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n");}
+  | maximo { printf("\n Regla - factor: maximo \n");}
   ;
 
 %%
@@ -152,7 +165,7 @@ factor: ID {printf("\n Regla - factor: ID \n");}
 int main(int argc, char *argv[]) 
 {
   yyin = fopen(argv[1], "r");
-  yydebug = 1;
+  yydebug = 0;
 
   printf("COMENZANDO COMPILACION\n");
   do 
@@ -164,3 +177,11 @@ int main(int argc, char *argv[])
   return 0;
 }
 
+void yyerror(const char *str)
+{
+    fprintf(stderr,"error: %s in line %d, column %d\n", str, yylineno, column);
+    fprintf(stderr,"%s", lineptr);
+    for(int i = 0; i < column - 1; i++)
+        fprintf(stderr,"_");
+    fprintf(stderr,"^\n");
+}
