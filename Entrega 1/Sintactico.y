@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h> 
 #include "ts.h"
 #define YYDEBUG 1
 extern int yylex();
@@ -178,18 +179,19 @@ int main(int argc, char *argv[])
 
     fclose(yyin);
 
- printf("TABLA DE SIMBOLOS\n");
+  printf("TABLA DE SIMBOLOS");
+  printf("\n%10s\t%10s\t%10s\t%10s\n", "NOMBRE", "TIPO DATO", "VALOR", "LONGITUD");
 
   archivoTablaDeSimbolos = fopen("ts.txt","wt");
 
   if(!archivoTablaDeSimbolos)
    printf("no se pudo abrir el archivo");
 
-
   while(tablaDeSimbolos)
   {
-  printf("\nLexema:%s\n",(*tablaDeSimbolos).info.lexema);
+    printf("%10s\t%10s\t%10s\t%10d\n", (*tablaDeSimbolos).info.lexema,  (*tablaDeSimbolos).info.tipo,  (*tablaDeSimbolos).info.valor,  (*tablaDeSimbolos).info.longitud);
   fprintf(archivoTablaDeSimbolos,"|%s|%s|%s|\n",(tablaDeSimbolos)->info.lexema,(tablaDeSimbolos)->info.tipo,(tablaDeSimbolos)->info.valor);
+
   tablaDeSimbolos = (*tablaDeSimbolos).sig; 
   }
 
@@ -255,7 +257,19 @@ int insertarEnTablaDeSimbolos (char *yytext , tLista * tablaDeSimbolos)
 
   
   strcpy(dato.valor,yytext);
-  strcpy(dato.tipo,"");
+  printf("\n.%s.\n", yytext);
+    if (yytext[0] == '"') 
+    {
+        //dato.longitud = strlen(yytext);
+        strcpy(dato.tipo, "STRING");
+    } else if (strchr(yytext, '.') != NULL) 
+    {
+        strcpy(dato.tipo, "FLOAT");
+    } else if (isdigit(yytext[0]) != 0) 
+    {
+        strcpy(dato.tipo, "INTEGER");
+    }
+
   strcpy(dato.lexema,"_");
   strcat(dato.lexema,yytext);
   
