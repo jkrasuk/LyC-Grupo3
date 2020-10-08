@@ -2,12 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "ts.h"
 #define YYDEBUG 1
 extern int yylex();
 extern int yyparse();
+void yyerror(const char *s);
 extern FILE* yyin;
-    void yyerror(const char *s);
-    extern int yylineno;
+extern int yylineno;
+extern int yyleng;
+extern char *yytext;
 %}
 %token ID CTE_INT CTE_STRING CTE_REAL
 %token ASIG OP_SUMA OP_RESTA OP_MULT OP_DIV
@@ -151,11 +154,11 @@ termino: termino OP_MULT factor {printf("\n Regla - termino: termino OP_MULT fac
   | factor {printf("\n Regla - termino: factor\n");}
   ;
 
-factor: ID {printf("\n Regla - factor: ID \n");}
-  | CTE_INT {printf("\n Regla - factor: CTE_INT \n");}
-  | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n");}
-  | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n");}
-  | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n");}
+factor: ID {printf("\n Regla - factor: ID \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
+  | CTE_INT {printf("\n Regla - factor: CTE_INT \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
+  | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
+  | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
+  | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
   | maximo { printf("\n Regla - factor: maximo \n");}
   ;
 
@@ -163,6 +166,9 @@ factor: ID {printf("\n Regla - factor: ID \n");}
 
 int main(int argc, char *argv[]) 
 {
+  FILE *archivoTablaDeSimbolos;
+
+  crearTablaDeSimbolos(&tablaDeSimbolos);
   yydebug = 0;
   if ((yyin = fopen(argv[1], "rt")) == NULL) {
         printf("\nNo se puede abrir el archivo: %s\n", argv[1]);
@@ -172,6 +178,21 @@ int main(int argc, char *argv[])
 
     fclose(yyin);
 
+ printf("TABLA DE SIMBOLOS\n");
+
+  archivoTablaDeSimbolos = fopen("ts.txt","wt");
+
+  if(!archivoTablaDeSimbolos)
+   printf("no se pudo abrir el archivo");
+
+
+  while(tablaDeSimbolos)
+  {
+  printf("\nLexema:%s\n",(*tablaDeSimbolos).info.lexema);
+  fprintf(archivoTablaDeSimbolos,"|%s|%s|%s|\n",(tablaDeSimbolos)->info.lexema,(tablaDeSimbolos)->info.tipo,(tablaDeSimbolos)->info.valor);
+  tablaDeSimbolos = (*tablaDeSimbolos).sig; 
+  }
+
   return 0;
 }
 
@@ -180,4 +201,71 @@ void yyerror(const char *str)
     fprintf(stderr,"error: %s in line %d\n", str, yylineno);
        system ("Pause");
     exit (1);
+}
+
+void crearTablaDeSimbolos(tLista * pl)
+{
+    printf("cree la lista\n");
+    *pl=NULL;
+}
+
+int comparar(char *yytext , tDato * dato )
+{
+  
+  return strcmp(yytext , dato->valor); 
+  
+  
+}
+
+int buscarEnTablaDeSimbolos(char *yytext , tLista * tablaDeSimbolos)
+{
+  int contador=0;
+  
+  while( *tablaDeSimbolos )
+  { 
+    contador++;
+    if( (comparar(yytext , &(*tablaDeSimbolos)->info) == 0))
+      {
+        printf("\nEl identificador: %s  esta duplicado\n",yytext);
+        return 0;
+      }
+    else
+      {
+        
+        
+        tablaDeSimbolos = &(*tablaDeSimbolos)->sig; 
+      }
+  } 
+
+
+  insertarEnTablaDeSimbolos(yytext,tablaDeSimbolos);
+  
+  return 1;
+}
+
+int insertarEnTablaDeSimbolos (char *yytext , tLista * tablaDeSimbolos)
+{
+  
+  tDato dato;
+  
+  dato.valor = (char*) malloc(sizeof(char[yyleng + 1]));
+  dato.tipo = (char*) malloc(sizeof(char));
+  dato.lexema = (char*) malloc(sizeof(char[yyleng+2]));
+
+
+  
+  strcpy(dato.valor,yytext);
+  strcpy(dato.tipo,"");
+  strcpy(dato.lexema,"_");
+  strcat(dato.lexema,yytext);
+  
+  tNodo * nuevo = (tNodo*) malloc (sizeof(tNodo));
+
+  if(!nuevo)
+  return 0;
+
+  nuevo->info = dato;
+  nuevo->sig  = *tablaDeSimbolos;
+  *tablaDeSimbolos = nuevo;
+  return 1; 
 }
