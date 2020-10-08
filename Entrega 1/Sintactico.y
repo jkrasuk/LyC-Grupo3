@@ -17,7 +17,7 @@ extern char *yytext;
 %token ASIG OP_SUMA OP_RESTA OP_MULT OP_DIV
 %token MENOR MAYOR IGUAL DISTINTO MENOR_IGUAL MAYOR_IGUAL
 %token AND OR NOT
-%token INTEGER FLOAT STRING 
+%token INTEGER FLOAT STRING
 %token GUION_BAJO COMA PUNTO_COMA DOS_PUNTOS
 %token IF ELSE ENDIF
 %token DIM AS
@@ -48,12 +48,12 @@ extern char *yytext;
 %type <auxLogicOperator> logic_concatenator
 %start programa
 
-%union 
+%union
 {
-  int intVal;
-  float floatVal;
-  char strVal[30];
-  char* auxLogicOperator;
+    int intVal;
+    float floatVal;
+    char strVal[30];
+    char* auxLogicOperator;
 }
 %%
 
@@ -165,43 +165,46 @@ factor: ID {printf("\n Regla - factor: ID \n"); buscarEnTablaDeSimbolos(yytext ,
 
 %%
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
-  FILE *archivoTablaDeSimbolos;
+    FILE *archivoTablaDeSimbolos;
 
-  crearTablaDeSimbolos(&tablaDeSimbolos);
-  yydebug = 0;
-  if ((yyin = fopen(argv[1], "rt")) == NULL) {
+    crearTablaDeSimbolos(&tablaDeSimbolos);
+    yydebug = 0;
+    if ((yyin = fopen(argv[1], "rt")) == NULL)
+    {
         printf("\nNo se puede abrir el archivo: %s\n", argv[1]);
-    } else {
+    }
+    else
+    {
         yyparse();
     }
 
     fclose(yyin);
 
-  printf("TABLA DE SIMBOLOS");
-  printf("\n%10s\t%10s\t%10s\t%10s\n", "NOMBRE", "TIPO DATO", "VALOR", "LONGITUD");
+    printf("TABLA DE SIMBOLOS");
+    printf("\n%10s\t%10s\t%10s\t%10s\n", "NOMBRE", "TIPO DATO", "VALOR", "LONGITUD");
 
-  archivoTablaDeSimbolos = fopen("ts.txt","wt");
+    archivoTablaDeSimbolos = fopen("ts.txt","wt");
 
-  if(!archivoTablaDeSimbolos)
-   printf("no se pudo abrir el archivo");
+    if(!archivoTablaDeSimbolos)
+        printf("no se pudo abrir el archivo");
 
-  while(tablaDeSimbolos)
-  {
-    printf("%10s\t%10s\t%10s\t%10d\n", (*tablaDeSimbolos).info.lexema,  (*tablaDeSimbolos).info.tipo,  (*tablaDeSimbolos).info.valor,  (*tablaDeSimbolos).info.longitud);
-  fprintf(archivoTablaDeSimbolos,"|%s|%s|%s|\n",(tablaDeSimbolos)->info.lexema,(tablaDeSimbolos)->info.tipo,(tablaDeSimbolos)->info.valor);
+    while(tablaDeSimbolos)
+    {
+        printf("%10s\t%10s\t%10s\t\n", (*tablaDeSimbolos).info.lexema,  (*tablaDeSimbolos).info.tipo,  (*tablaDeSimbolos).info.valor);
+        fprintf(archivoTablaDeSimbolos,"|%s|%s|%s|\n",(tablaDeSimbolos)->info.lexema,(tablaDeSimbolos)->info.tipo,(tablaDeSimbolos)->info.valor);
 
-  tablaDeSimbolos = (*tablaDeSimbolos).sig; 
-  }
+        tablaDeSimbolos = (*tablaDeSimbolos).sig;
+    }
 
-  return 0;
+    return 0;
 }
 
 void yyerror(const char *str)
 {
     fprintf(stderr,"error: %s in line %d\n", str, yylineno);
-       system ("Pause");
+    system ("Pause");
     exit (1);
 }
 
@@ -211,75 +214,61 @@ void crearTablaDeSimbolos(tLista * pl)
     *pl=NULL;
 }
 
-int comparar(char *yytext , tDato * dato )
+int comparar(char *yytext, tDato * dato )
 {
-  
-  return strcmp(yytext , dato->valor); 
-  
-  
+
+    return strcmp(yytext, dato->valor);
+
+
 }
 
-int buscarEnTablaDeSimbolos(char *yytext , tLista * tablaDeSimbolos)
+int buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
 {
-  int contador=0;
-  
-  while( *tablaDeSimbolos )
-  { 
-    contador++;
-    if( (comparar(yytext , &(*tablaDeSimbolos)->info) == 0))
-      {
-        printf("\nEl identificador: %s  esta duplicado\n",yytext);
-        return 0;
-      }
-    else
-      {
-        
-        
-        tablaDeSimbolos = &(*tablaDeSimbolos)->sig; 
-      }
-  } 
+    int contador=0;
 
-
-  insertarEnTablaDeSimbolos(yytext,tablaDeSimbolos);
-  
-  return 1;
-}
-
-int insertarEnTablaDeSimbolos (char *yytext , tLista * tablaDeSimbolos)
-{
-  
-  tDato dato;
-  
-  dato.valor = (char*) malloc(sizeof(char[yyleng + 1]));
-  dato.tipo = (char*) malloc(sizeof(char));
-  dato.lexema = (char*) malloc(sizeof(char[yyleng+2]));
-
-
-  
-  strcpy(dato.valor,yytext);
-  printf("\n.%s.\n", yytext);
-    if (yytext[0] == '"') 
+    while( *tablaDeSimbolos )
     {
-        //dato.longitud = strlen(yytext);
-        strcpy(dato.tipo, "STRING");
-    } else if (strchr(yytext, '.') != NULL) 
-    {
-        strcpy(dato.tipo, "FLOAT");
-    } else if (isdigit(yytext[0]) != 0) 
-    {
-        strcpy(dato.tipo, "INTEGER");
+        contador++;
+        if( (comparar(yytext, &(*tablaDeSimbolos)->info) == 0))
+        {
+            printf("\nEl identificador: %s  esta duplicado\n",yytext);
+            return 0;
+        }
+        else
+        {
+
+
+            tablaDeSimbolos = &(*tablaDeSimbolos)->sig;
+        }
     }
 
-  strcpy(dato.lexema,"_");
-  strcat(dato.lexema,yytext);
-  
-  tNodo * nuevo = (tNodo*) malloc (sizeof(tNodo));
 
-  if(!nuevo)
-  return 0;
+    insertarEnTablaDeSimbolos(yytext,tablaDeSimbolos);
 
-  nuevo->info = dato;
-  nuevo->sig  = *tablaDeSimbolos;
-  *tablaDeSimbolos = nuevo;
-  return 1; 
+    return 1;
+}
+
+int insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
+{
+    int len = strlen(yytext);
+    tDato dato;
+
+    dato.valor = (char*) malloc(sizeof(char[yyleng + 1]));
+    dato.tipo = (char*) malloc(sizeof(char));
+    dato.lexema = (char*) malloc(sizeof(char[yyleng+2]));
+
+    strcpy(dato.valor,yytext);
+    strcpy(dato.tipo,"");
+    strcpy(dato.lexema,"_");
+    strcat(dato.lexema,yytext);
+
+    tNodo * nuevo = (tNodo*) malloc (sizeof(tNodo));
+
+    if(!nuevo)
+        return 0;
+
+    nuevo->info = dato;
+    nuevo->sig  = *tablaDeSimbolos;
+    *tablaDeSimbolos = nuevo;
+    return 1;
 }
