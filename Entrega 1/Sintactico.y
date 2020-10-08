@@ -8,11 +8,7 @@ extern int yyparse();
 extern FILE* yyin;
     void yyerror(const char *s);
     extern int yylineno;
-    extern int column;
-    extern char *lineptr;
-    #define YYERROR_VERBOSE 1
 %}
-
 %token ID CTE_INT CTE_STRING CTE_REAL
 %token ASIG OP_SUMA OP_RESTA OP_MULT OP_DIV
 %token MENOR MAYOR IGUAL DISTINTO MENOR_IGUAL MAYOR_IGUAL
@@ -57,17 +53,16 @@ extern FILE* yyin;
 }
 %%
 
-programa: sentencia_declaracion {printf("\n Regla: COMPILACION EXITOSA\n");}
+programa: sentencia_declaracion algoritmo {printf("\n Regla - programa: Compilacion exitosa \n");}
   ;
 
-sentencia_declaracion: bloque_declaracion_variables bloque {printf("\n Regla - sentencia: bloque_declaracion_variables bloque \n");}
-  | bloque_declaracion_variables {printf("\n Regla - sentencia: bloque_declaracion_variables \n");}
+sentencia_declaracion: bloque_declaracion_variables {printf("\n Regla - sentencia: bloque_declaracion_variables \n");}
   ;
 
 bloque_declaracion_variables: DIM MENOR lista_variables MAYOR AS MENOR tipos_variables MAYOR {printf("\n Regla - bloque_declaracion_variables: DIM MENOR declaracion_variables MAYOR AS MENOR tipos_variables MAYOR \n");}
   ;
 
-lista_variables: ID COMA lista_variables {printf("\n Regla - lista_variables: lista_variables COMA ID \n");}
+lista_variables: lista_variables COMA ID   {printf("\n Regla - lista_variables: lista_variables COMA ID \n");}
 |ID {printf("\n Regla - lista_variables: ID \n");}
   ;
 
@@ -80,8 +75,11 @@ tipo_variable: INTEGER {printf("\n Regla - tipo_variable: INTEGER \n");}
   | STRING {printf("\n Regla - tipo_variable: STRING \n");}
   ;
 
-bloque: sentencia PUNTO_COMA {printf("\n Regla - bloque: sentencia \n");}
-  | bloque sentencia PUNTO_COMA {printf("\n Regla - bloque: bloque sentencia \n");}
+algoritmo: bloque {printf("\n Regla - sentencia: bloque \n");}
+ ;
+
+bloque: sentencia PUNTO_COMA {printf("\n Regla - bloque: sentencia ; \n");}
+  | bloque sentencia PUNTO_COMA {printf("\n Regla - bloque: bloque sentencia ; \n");}
   | bloque sentencia {printf("\n Regla - bloque: bloque sentencia \n");}
   | sentencia {printf("\n Regla - bloque: sentencia \n");}
   ;
@@ -91,20 +89,21 @@ sentencia: decision {printf("\n Regla - sentencia: decision \n");}
   | put {printf("\n Regla - sentencia: put \n");}
   | get {printf("\n Regla - sentencia: get \n");}
   | iteracion {printf("\n Regla - sentencia: iteracion \n");}
-  | asignacion_constante  {printf(" Regla - asignacion_constante OK\n");}
+  | asignacion_constante  {printf("\n Regla - asignacion_constante \n");}
   ;
 
 decision: IF P_A condicion P_C L_A bloque L_C ELSE L_A bloque L_C {printf("\n Regla - decision: IF P_A condicion P_C L_A bloque L_C ELSE L_A bloque L_C \n");}
   | IF P_A condicion P_C L_A bloque L_C {printf("\n Regla - decision: IF P_A condicion P_C L_A bloque L_C \n");}
   ;
 
-asignacion: ID ASIG expresion {printf("\n Regla - asignacion: ID ASIG expresion \n");};
+asignacion: ID ASIG expresion {printf("\n Regla - asignacion: ID ASIG expresion \n");}
+  ;
 
-asignacion_constante: CONST ID ASIG expresion {printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");};
+asignacion_constante: CONST ID ASIG expresion {printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");}
+  ;
 
 lista_expresiones: lista_expresiones COMA termino {printf("\n Regla - lista_expresiones:  lista_expresiones COMA termino \n");}
-  ;
-lista_expresiones: termino {printf("\n Regla - lista_expresiones: termino \n");}
+ | termino {printf("\n Regla - lista_expresiones: termino \n");}
  ;
 
 maximo: MAXIMO P_A lista_expresiones P_C {printf("\n Regla - maximo: MAXIMO P_A lista_expresiones P_C \n");}
@@ -164,24 +163,21 @@ factor: ID {printf("\n Regla - factor: ID \n");}
 
 int main(int argc, char *argv[]) 
 {
-  yyin = fopen(argv[1], "r");
   yydebug = 0;
+  if ((yyin = fopen(argv[1], "rt")) == NULL) {
+        printf("\nNo se puede abrir el archivo: %s\n", argv[1]);
+    } else {
+        yyparse();
+    }
 
-  printf("COMENZANDO COMPILACION\n");
-  do 
-  {
-    yyparse();
-  } 
-  while(!feof(yyin));
+    fclose(yyin);
 
   return 0;
 }
 
 void yyerror(const char *str)
 {
-    fprintf(stderr,"error: %s in line %d, column %d\n", str, yylineno, column);
-    fprintf(stderr,"%s", lineptr);
-    for(int i = 0; i < column - 1; i++)
-        fprintf(stderr,"_");
-    fprintf(stderr,"^\n");
+    fprintf(stderr,"error: %s in line %d\n", str, yylineno);
+       system ("Pause");
+    exit (1);
 }

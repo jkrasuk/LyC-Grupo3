@@ -10,32 +10,6 @@ void validarLimitesConstanteString();
 void validarLimitesConstanteReal();
 void validarLimitesConstanteInt();
 void validarID();
-
-    static int next_column = 1;
-    int column = 1;
-
-    #define HANDLE_COLUMN column = next_column; next_column += strlen(yytext)
-
-    char *lineptr = NULL;
-    size_t n = 0;
-    size_t consumed = 0;
-    size_t available = 0;
-
-    size_t min(size_t a, size_t b);
-    #define YY_INPUT(buf,result,max_size) {\
-        if(available <= 0) {\
-            consumed = 0;\
-            available = getline(&lineptr, &n, yyin);\
-            if (available < 0) {\
-                if (ferror(yyin)) { perror("read error:"); }\
-                    available = 0;\
-                }\
-        }\
-        result = min(available, max_size);\
-        strncpy(buf, lineptr + consumed, result);\
-        consumed += result;\
-        available -= result;\
-    }
 %}
 %option noyywrap noinput nounput yylineno
 
@@ -113,13 +87,11 @@ MAXIMO									[Mm][Aa][Xx][Ii][Mm][Oo]
 {CTE_STRING}							{ validarLimitesConstanteString(); strcpy(yylval.strVal, yytext);  return CTE_STRING; }
 {CTE_REAL}								{ validarLimitesConstanteReal(); yylval.floatVal = atof(yytext);  return CTE_REAL; }
 {ID}									{ strcpy(yylval.strVal, yytext); validarID();  return ID; }
-.       { printf(yytext);}
 " "
 "\t"
 "\n"
 {COMENTARIO}
-<<EOF>>									{ yyterminate(); }
-
+<<EOF>> {yyterminate();}
 %%
 
 void validarLimitesConstanteString() 
@@ -159,8 +131,4 @@ void validarID()
 		system ("Pause");
 		exit (1);
 	}
-}
-
-size_t min(size_t a, size_t b) {
-    return b < a ? b : a;
 }
