@@ -57,7 +57,7 @@ extern char *yytext;
 }
 %%
 
-programa: sentencia_declaracion algoritmo {printf("\n Regla - programa: Compilacion exitosa \n");}
+programa: sentencia_declaracion algoritmo {printf("\n Regla - programa \n");}
   ;
 
 sentencia_declaracion: bloque_declaracion_variables {printf("\n Regla - sentencia: bloque_declaracion_variables \n");}
@@ -159,7 +159,7 @@ factor: ID {printf("\n Regla - factor: ID \n"); buscarEnTablaDeSimbolos(yytext ,
   | CTE_INT {printf("\n Regla - factor: CTE_INT \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
   | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
   | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
-  | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
+  | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n");}
   | maximo { printf("\n Regla - factor: maximo \n");}
   ;
 
@@ -181,6 +181,7 @@ int main(int argc, char *argv[])
     }
 
     fclose(yyin);
+    printf("\n COMPILACION EXITOSA \n");
 
     printf("TABLA DE SIMBOLOS");
     printf("\n%10s\t%10s\t%10s\t%10s\n", "NOMBRE", "TIPO DATO", "VALOR", "LONGITUD");
