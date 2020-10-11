@@ -19,8 +19,8 @@ LETRA									[a-zA-Z]
 DELIM									[ \t\n\r]
 CARACTER								[a-z|A-Z|0-9|=|>|<|!|:|+|-|*|/|?|¿|!|¡|@|%|#|&|°|´|^|`|~|/|\\|-|_|.|,|;|¬||]
 VALID_STRING							({CARACTER}+|{DELIM})*
-COMENTARIO								\*-.({CARACTER}|{DELIM})*.-\*
-
+COMENTARIO								\*-.({CARACTER}|{DELIM})*.
+COMENTARIO_ANIDADO                      {COMENTARIO}({COMENTARIO}-\*)?.-\*
 CTE_STRING								\"{VALID_STRING}\"
 CTE_REAL								-?{DIGITO}+"."{DIGITO}*
 CTE_INT									-?{DIGITO}+
@@ -90,7 +90,7 @@ MAXIMO									[Mm][Aa][Xx][Ii][Mm][Oo]
 " "
 "\t"
 "\n"
-{COMENTARIO}
+{COMENTARIO_ANIDADO}
 <<EOF>> {yyterminate();}
 %%
 

@@ -10,7 +10,7 @@ while (contador <= 9) {
 	actual = (contador/0.342) + (contador* maximo (actual*contador, 2, actual*pivot,maximo(4,actual,nombre)));
 	suma = suma + actual;
 };
-
+*- Asi son los comentarios en el 2°Cuat de LyC  -*
 PUT "La suma es: ";
 PUT suma;
 

@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
     fclose(yyin);
     printf("\n COMPILACION EXITOSA \n");
 
-    printf("TABLA DE SIMBOLOS");
+    printf("\n TABLA DE SIMBOLOS\n");
     printf("\n%10s\t%10s\t%10s\t%10s\n", "NOMBRE", "TIPO DATO", "VALOR", "LONGITUD");
 
     archivoTablaDeSimbolos = fopen("ts.txt","wt");
