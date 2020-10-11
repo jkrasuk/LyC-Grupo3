@@ -12,6 +12,8 @@ extern FILE* yyin;
 extern int yylineno;
 extern int yyleng;
 extern char *yytext;
+int variable = 0;
+int tipoVariable = 0;
 %}
 %token ID CTE_INT CTE_STRING CTE_REAL
 %token ASIG OP_SUMA OP_RESTA OP_MULT OP_DIV
@@ -64,15 +66,21 @@ sentencia_declaracion: sentencia_declaracion bloque_declaracion_variables {print
 | bloque_declaracion_variables {printf("\n Regla - sentencia: bloque_declaracion_variables \n");}|
   ;
 
-bloque_declaracion_variables: DIM MENOR lista_variables MAYOR AS MENOR tipos_variables MAYOR {printf("\n Regla - bloque_declaracion_variables: DIM MENOR declaracion_variables MAYOR AS MENOR tipos_variables MAYOR \n");}
+bloque_declaracion_variables: DIM MENOR lista_variables MAYOR AS MENOR tipos_variables MAYOR {
+  if(variable != tipoVariable){
+    printf("\n No coincide la cantidad de variables con la cantidad de tipos \n");exit(1);
+  } else {
+    printf("\n Regla - bloque_declaracion_variables: DIM MENOR declaracion_variables MAYOR AS MENOR tipos_variables MAYOR \n");
+  }
+ }
   ;
 
-lista_variables: lista_variables COMA ID   {printf("\n Regla - lista_variables: lista_variables COMA ID \n");}
-|ID {printf("\n Regla - lista_variables: ID \n");}
+lista_variables: lista_variables COMA ID   {variable++; printf("\n Regla - lista_variables: lista_variables COMA ID \n");}
+|ID {variable++; printf("\n Regla - lista_variables: ID \n");}
   ;
 
-tipos_variables: tipos_variables COMA tipo_variable {printf("\n Regla - lista_variables: lista_variables COMA tipo_variable \n");}
-|tipo_variable {printf("\n Regla - lista_variables: tipo_variable \n");} 
+tipos_variables: tipos_variables COMA tipo_variable {tipoVariable++; printf("\n Regla - lista_variables: lista_variables COMA tipo_variable \n");}
+|tipo_variable {tipoVariable++; printf("\n Regla - lista_variables: tipo_variable \n");} 
 ;
 
 tipo_variable: INTEGER {printf("\n Regla - tipo_variable: INTEGER \n");}
