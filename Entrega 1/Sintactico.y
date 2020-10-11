@@ -60,7 +60,8 @@ extern char *yytext;
 programa: sentencia_declaracion algoritmo {printf("\n Regla - programa \n");}
   ;
 
-sentencia_declaracion: bloque_declaracion_variables {printf("\n Regla - sentencia: bloque_declaracion_variables \n");}
+sentencia_declaracion: sentencia_declaracion bloque_declaracion_variables {printf("\n Regla - sentencia: sentencia_declaracion bloque_declaracion_variables \n");}
+| bloque_declaracion_variables {printf("\n Regla - sentencia: bloque_declaracion_variables \n");}|
   ;
 
 bloque_declaracion_variables: DIM MENOR lista_variables MAYOR AS MENOR tipos_variables MAYOR {printf("\n Regla - bloque_declaracion_variables: DIM MENOR declaracion_variables MAYOR AS MENOR tipos_variables MAYOR \n");}

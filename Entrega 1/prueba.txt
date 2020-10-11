@@ -1,4 +1,6 @@
 DIM < contador,promedio,actual,suma> AS < Integer,Float,Float,Float >
+DIM < prueba > AS < Integer, Float >
+
 CONST nombre=85;
 PUT "Prueba.txt LyC Tema 3!";
 PUT "Ingrese valor actual: ";
