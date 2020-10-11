@@ -22,7 +22,7 @@ VALID_STRING							({CARACTER}+|{DELIM})*
 COMENTARIO								\*-.({CARACTER}|{DELIM})*.
 COMENTARIO_ANIDADO                      {COMENTARIO}({COMENTARIO}-\*)?.-\*
 CTE_STRING								\"{VALID_STRING}\"
-CTE_REAL								-?{DIGITO}+"."{DIGITO}*
+CTE_REAL								-?{DIGITO}*"."{DIGITO}*
 CTE_INT									-?{DIGITO}+
 ID										{LETRA}({LETRA}|{DIGITO}|_)*
 
