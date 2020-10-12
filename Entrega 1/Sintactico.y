@@ -117,8 +117,8 @@ tipo_variable: INTEGER {printf("\n Regla - tipo_variable: INTEGER \n");}
 algoritmo: bloque {printf("\n Regla - sentencia: bloque \n");}
  ;
 
-bloque: sentencia PUNTO_COMA {printf("\n Regla - bloque: sentencia ; \n");}
-  | bloque sentencia PUNTO_COMA {printf("\n Regla - bloque: bloque sentencia ; \n");}
+bloque: sentencia PUNTO_COMA {printf("\n Regla - bloque: sentencia PUNTO_COMA \n");}
+  | bloque sentencia PUNTO_COMA {printf("\n Regla - bloque: bloque sentencia PUNTO_COMA \n");}
   | bloque sentencia {printf("\n Regla - bloque: bloque sentencia \n");}
   | sentencia {printf("\n Regla - bloque: sentencia \n");}
   ;
@@ -191,7 +191,7 @@ termino: termino OP_MULT factor {printf("\n Regla - termino: termino OP_MULT fac
   ;
 
 factor: ID {printf("\n Regla - factor: ID \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
-  | CTE_INT {printf("\n %s \n", yytext); printf("\n Regla - factor: CTE_INT \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
+  | CTE_INT { printf("\n Regla - factor: CTE_INT \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
   | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
   | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
   | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n");}
