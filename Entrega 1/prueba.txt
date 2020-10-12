@@ -1,11 +1,13 @@
 DIM < contador,promedio,actual,suma> AS < Integer,Float,Float,Float >
 
+*- Constante con Nombre -*
 CONST nombre=85;
 PUT "Prueba.txt LyC Tema 3!";
 PUT "Ingrese valor actual: ";
 GET actual;
 contador = 0;
 suma = 02.5+nombre;
+
 while (contador <= 9) {
 	contador = contador + 1;
 	actual = (contador/0.342) + (contador* maximo (actual*contador, 2, actual*pivot,maximo(4,actual,nombre)));

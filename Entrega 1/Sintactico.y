@@ -5,7 +5,6 @@
 #include <ctype.h> 
 #define YYDEBUG 1
 
-
 typedef struct
 {
   char *lexema;
@@ -25,16 +24,16 @@ typedef struct sNodo
 typedef tNodo *tLista; 
 
 int comparar(char *yytext , tDato *dato );
-void crearTablaDeSimbolos(tLista * pl);
-int buscarEnTablaDeSimbolos(char *yytext , tLista * tablaDeSimbolos);
-int insertarEnTablaDeSimbolos (char *yytext , tLista * tablaDeSimbolos);
+void crearTablaDeSimbolos(tLista *pl);
+int buscarEnTablaDeSimbolos(char *yytext , tLista *tablaDeSimbolos);
+int insertarEnTablaDeSimbolos (char *yytext , tLista *tablaDeSimbolos);
 
 tLista tablaDeSimbolos;
 
 extern int yylex();
 extern int yyparse();
 void yyerror(const char *s);
-extern FILE* yyin;
+extern FILE *yyin;
 extern int yylineno;
 extern int yyleng;
 extern char *yytext;
@@ -81,7 +80,7 @@ int tipoVariable = 0;
     int intVal;
     float floatVal;
     char strVal[30];
-    char* auxLogicOperator;
+    char *auxLogicOperator;
 }
 %%
 
@@ -89,7 +88,7 @@ programa: sentencia_declaracion algoritmo {printf("\n Regla - programa \n");}
   ;
 
 sentencia_declaracion: sentencia_declaracion bloque_declaracion_variables {printf("\n Regla - sentencia: sentencia_declaracion bloque_declaracion_variables \n");}
-| bloque_declaracion_variables {printf("\n Regla - sentencia: bloque_declaracion_variables \n");}|
+| bloque_declaracion_variables {printf("\n Regla - sentencia: bloque_declaracion_variables \n");}
   ;
 
 bloque_declaracion_variables: DIM MENOR lista_variables MAYOR AS MENOR tipos_variables MAYOR {
@@ -200,18 +199,14 @@ factor: ID {printf("\n Regla - factor: ID \n"); buscarEnTablaDeSimbolos(yytext ,
 
 %%
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     FILE *archivoTablaDeSimbolos;
 
     crearTablaDeSimbolos(&tablaDeSimbolos);
     yydebug = 0;
-    if ((yyin = fopen(argv[1], "rt")) == NULL)
-    {
+    if ((yyin = fopen(argv[1], "rt")) == NULL) {
         printf("\nNo se puede abrir el archivo: %s\n", argv[1]);
-    }
-    else
-    {
+    } else {
         yyparse();
     }
 
@@ -221,18 +216,17 @@ int main(int argc, char *argv[])
     printf("\n TABLA DE SIMBOLOS\n");
     printf("\n %-40s\t%-10s\t%-40s\t%-5s", "NOMBRE", "TIPO DATO", "VALOR", "LONGITUD");
 
-    archivoTablaDeSimbolos = fopen("ts.txt","wt");
+    archivoTablaDeSimbolos = fopen("ts.txt", "wt");
 
-    if(!archivoTablaDeSimbolos){
+    if (!archivoTablaDeSimbolos) {
         printf("no se pudo abrir el archivo");
-    }else{
+    } else {
         fprintf(archivoTablaDeSimbolos, "%-40s\t%-10s\t%-40s\t%-5s\n", "NOMBRE", "TIPO DATO", "VALOR", "LONGITUD");
     }
 
-    while(tablaDeSimbolos)
-    {
-        printf(" %-40s\t%-10s\t%-40s\t%-5s\n", (*tablaDeSimbolos).info.lexema,  (*tablaDeSimbolos).info.tipo,  (*tablaDeSimbolos).info.valor, (*tablaDeSimbolos).info.longitud);
-        fprintf(archivoTablaDeSimbolos,"%-40s\t%-10s\t%-40s\t%-5s\n",(tablaDeSimbolos)->info.lexema,(tablaDeSimbolos)->info.tipo,(tablaDeSimbolos)->info.valor, (*tablaDeSimbolos).info.longitud);
+    while (tablaDeSimbolos) {
+        printf(" %-40s\t%-10s\t%-40s\t%-5s\n", (*tablaDeSimbolos).info.lexema, (*tablaDeSimbolos).info.tipo, (*tablaDeSimbolos).info.valor, (*tablaDeSimbolos).info.longitud);
+        fprintf(archivoTablaDeSimbolos, "%-40s\t%-10s\t%-40s\t%-5s\n", (tablaDeSimbolos)->info.lexema, (tablaDeSimbolos)->info.tipo, (tablaDeSimbolos)->info.valor, (*tablaDeSimbolos).info.longitud);
 
         tablaDeSimbolos = (*tablaDeSimbolos).sig;
     }
@@ -240,74 +234,61 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void yyerror(const char *str)
-{
-    fprintf(stderr,"error: %s in line %d\n", str, yylineno);
-    system ("Pause");
-    exit (1);
+void yyerror(const char *str) {
+    fprintf(stderr, "Error: %s en la linea %d\n", str, yylineno);
+    system("Pause");
+    exit(1);
 }
 
-void crearTablaDeSimbolos(tLista * pl)
-{
+void crearTablaDeSimbolos(tLista *pl) {
     //printf("cree la lista\n");
-    *pl=NULL;
+    *pl = NULL;
 }
 
-int comparar(char *yytext, tDato * dato )
-{
-
+int comparar(char *yytext, tDato *dato) {
     return strcmp(yytext, dato->valor);
-
-
 }
 
-int buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
-{
-    int contador=0;
+int buscarEnTablaDeSimbolos(char *yytext, tLista *tablaDeSimbolos) {
+    int contador = 0;
 
-    while( *tablaDeSimbolos )
-    {
+    while (*tablaDeSimbolos) {
         contador++;
-        if( (comparar(yytext, &(*tablaDeSimbolos)->info) == 0))
-        {
+        if ((comparar(yytext, &(*tablaDeSimbolos)->info) == 0)) {
             // printf("\nEl identificador: %s  esta duplicado\n",yytext);
             return 0;
-        }
-        else
-        {
+        } else {
             tablaDeSimbolos = &(*tablaDeSimbolos)->sig;
         }
     }
 
-
-    insertarEnTablaDeSimbolos(yytext,tablaDeSimbolos);
+    insertarEnTablaDeSimbolos(yytext, tablaDeSimbolos);
 
     return 1;
 }
 
-int insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
-{
+int insertarEnTablaDeSimbolos(char *yytext, tLista *tablaDeSimbolos) {
     int len = strlen(yytext);
     tDato dato;
 
-    dato.valor = (char*) malloc(sizeof(char[yyleng + 1]));
-    dato.tipo = (char*) malloc(sizeof(char));
-    dato.lexema = (char*) malloc(sizeof(char[yyleng+2]));
-    dato.longitud = (char*) malloc(sizeof(yyleng));
+    dato.valor = (char *) malloc(sizeof(char[yyleng + 1]));
+    dato.tipo = (char *) malloc(sizeof(char));
+    dato.lexema = (char *) malloc(sizeof(char[yyleng + 2]));
+    dato.longitud = (char *) malloc(sizeof(yyleng));
 
-    strcpy(dato.valor,yytext);
-    strcpy(dato.tipo,"-");
-    strcpy(dato.longitud,"-");
-    strcpy(dato.lexema,"_");
-    strcat(dato.lexema,yytext);
+    strcpy(dato.valor, yytext);
+    strcpy(dato.tipo, "-");
+    strcpy(dato.longitud, "-");
+    strcpy(dato.lexema, "_");
+    strcat(dato.lexema, yytext);
 
-    tNodo * nuevo = (tNodo*) malloc (sizeof(tNodo));
+    tNodo *nuevo = (tNodo *) malloc(sizeof(tNodo));
 
-    if(!nuevo)
+    if (!nuevo)
         return 0;
 
     nuevo->info = dato;
-    nuevo->sig  = *tablaDeSimbolos;
+    nuevo->sig = *tablaDeSimbolos;
     *tablaDeSimbolos = nuevo;
     return 1;
 }
