@@ -84,10 +84,10 @@ int tipoVariable = 0;
 }
 %%
 
-programa: sentencia_declaracion algoritmo {printf("\n Regla - programa \n");}
+programa: sentencia_declaracion algoritmo {printf("\n Regla - programa: sentencia_declaracion algoritmo \n");}
   ;
 
-sentencia_declaracion: sentencia_declaracion bloque_declaracion_variables {printf("\n Regla - sentencia: sentencia_declaracion bloque_declaracion_variables \n");}
+sentencia_declaracion: sentencia_declaracion bloque_declaracion_variables {printf("\n Regla - sentencia_declaracion: sentencia_declaracion bloque_declaracion_variables \n");}
 | bloque_declaracion_variables {printf("\n Regla - sentencia: bloque_declaracion_variables \n");}
   ;
 
@@ -113,7 +113,7 @@ tipo_variable: INTEGER {printf("\n Regla - tipo_variable: INTEGER \n");}
   | STRING {printf("\n Regla - tipo_variable: STRING \n");}
   ;
 
-algoritmo: bloque {printf("\n Regla - sentencia: bloque \n");}
+algoritmo: bloque {printf("\n Regla - algoritmo: bloque \n");}
  ;
 
 bloque: sentencia PUNTO_COMA {printf("\n Regla - bloque: sentencia PUNTO_COMA \n");}
@@ -134,7 +134,7 @@ decision: IF P_A condicion P_C L_A bloque L_C ELSE L_A bloque L_C {printf("\n Re
   | IF P_A condicion P_C L_A bloque L_C {printf("\n Regla - decision: IF P_A condicion P_C L_A bloque L_C \n");}
   ;
 
-asignacion: ID ASIG expresion
+asignacion: ID ASIG expresion {printf("\n Regla - asignacion: ID ASIG expresion \n");}
   ;
 
 asignacion_constante: CONST ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);} ASIG expresion {printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");}
@@ -161,10 +161,13 @@ get: GET ID {printf("\n Regla - get: GET ID \n");}
 
 condicion: comparacion {printf("\n Regla - condicion: comparacion \n");}
   | comparacion logic_concatenator comparacion {printf("\n Regla - condicion: comparacion logic_concatenator comparacion \n");}
-  | NOT P_A comparacion P_C {printf("\n Regla - condicion: NOT comparacion \n");}
+  | NOT comparacion  {printf("\n Regla - condicion: NOT comparacion \n");}
+  | NOT factor {printf("\n Regla - condicion: NOT factor \n");}
+  | factor {printf("\n Regla - condicion: factor \n");}
   ;
 
 comparacion: expresion  logic_operator  expresion {printf("\n Regla - comparacion: expresion  logic_operator  expresion \n");}
+| P_A expresion logic_operator expresion P_C {printf("\n Regla - comparacion: P_A expresion logic_operator expresion P_C \n");}
   ;
 
 logic_operator: IGUAL {printf("\n Regla - logic_operator: IGUAL \n");}
