@@ -3,8 +3,34 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h> 
-#include "ts.h"
 #define YYDEBUG 1
+
+
+typedef struct
+{
+  char *lexema;
+  char *tipo;
+  char *valor;
+  char *longitud;
+}tInfo;
+
+typedef tInfo tDato;
+
+typedef struct sNodo
+{
+  tDato info;
+  struct sNodo *sig;
+}tNodo;
+
+typedef tNodo *tLista; 
+
+int comparar(char *yytext , tDato *dato );
+void crearTablaDeSimbolos(tLista * pl);
+int buscarEnTablaDeSimbolos(char *yytext , tLista * tablaDeSimbolos);
+int insertarEnTablaDeSimbolos (char *yytext , tLista * tablaDeSimbolos);
+
+tLista tablaDeSimbolos;
+
 extern int yylex();
 extern int yyparse();
 void yyerror(const char *s);
@@ -75,8 +101,8 @@ bloque_declaracion_variables: DIM MENOR lista_variables MAYOR AS MENOR tipos_var
  }
   ;
 
-lista_variables: lista_variables COMA ID   {variable++; printf("\n Regla - lista_variables: lista_variables COMA ID \n");}
-|ID {variable++; printf("\n Regla - lista_variables: ID \n");}
+lista_variables: lista_variables COMA ID  {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); variable++; printf("\n Regla - lista_variables: lista_variables COMA ID \n");}
+|ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); variable++; printf("\n Regla - lista_variables: ID \n");}
   ;
 
 tipos_variables: tipos_variables COMA tipo_variable {tipoVariable++; printf("\n Regla - lista_variables: lista_variables COMA tipo_variable \n");}
@@ -109,10 +135,10 @@ decision: IF P_A condicion P_C L_A bloque L_C ELSE L_A bloque L_C {printf("\n Re
   | IF P_A condicion P_C L_A bloque L_C {printf("\n Regla - decision: IF P_A condicion P_C L_A bloque L_C \n");}
   ;
 
-asignacion: ID ASIG expresion {printf("\n Regla - asignacion: ID ASIG expresion \n");}
+asignacion: ID ASIG expresion
   ;
 
-asignacion_constante: CONST ID ASIG expresion {printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");}
+asignacion_constante: CONST ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);} ASIG expresion {printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");}
   ;
 
 lista_expresiones: lista_expresiones COMA termino {printf("\n Regla - lista_expresiones:  lista_expresiones COMA termino \n");}
@@ -125,10 +151,10 @@ maximo: MAXIMO P_A lista_expresiones P_C {printf("\n Regla - maximo: MAXIMO P_A 
 iteracion: WHILE P_A condicion P_C L_A bloque L_C {printf("\n Regla - iteracion: WHILE P_A condicion P_C L_A bloque L_C \n");}
   ;
 
-put: PUT ID {printf("\n Regla - put: PUT ID \n");}
-  | PUT CTE_INT {printf("\n Regla - put: PUT CTE_INT \n");}
-  | PUT CTE_REAL {printf("\n Regla - put: PUT CTE_REAL \n");}
-  | PUT CTE_STRING {printf("\n Regla - put: PUT CTE_STRING \n");}
+put: PUT ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); printf("\n Regla - put: PUT ID \n");}
+  | PUT CTE_INT {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); printf("\n Regla - put: PUT CTE_INT \n");}
+  | PUT CTE_REAL {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); printf("\n Regla - put: PUT CTE_REAL \n");}
+  | PUT CTE_STRING {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); printf("\n Regla - put: PUT CTE_STRING \n");}
   ;
    
 get: GET ID {printf("\n Regla - get: GET ID \n");}
@@ -165,7 +191,7 @@ termino: termino OP_MULT factor {printf("\n Regla - termino: termino OP_MULT fac
   ;
 
 factor: ID {printf("\n Regla - factor: ID \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
-  | CTE_INT {printf("\n Regla - factor: CTE_INT \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
+  | CTE_INT {printf("\n %s \n", yytext); printf("\n Regla - factor: CTE_INT \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
   | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
   | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
   | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n");}
@@ -193,17 +219,20 @@ int main(int argc, char *argv[])
     printf("\n COMPILACION EXITOSA \n");
 
     printf("\n TABLA DE SIMBOLOS\n");
-    printf("\n%10s\t%10s\t%10s\t%10s\n", "NOMBRE", "TIPO DATO", "VALOR", "LONGITUD");
+    printf("\n %-40s\t%-10s\t%-40s\t%-5s", "NOMBRE", "TIPO DATO", "VALOR", "LONGITUD");
 
     archivoTablaDeSimbolos = fopen("ts.txt","wt");
 
-    if(!archivoTablaDeSimbolos)
+    if(!archivoTablaDeSimbolos){
         printf("no se pudo abrir el archivo");
+    }else{
+        fprintf(archivoTablaDeSimbolos, "%-40s\t%-10s\t%-40s\t%-5s\n", "NOMBRE", "TIPO DATO", "VALOR", "LONGITUD");
+    }
 
     while(tablaDeSimbolos)
     {
-        printf("%10s\t%10s\t%10s\t\n", (*tablaDeSimbolos).info.lexema,  (*tablaDeSimbolos).info.tipo,  (*tablaDeSimbolos).info.valor);
-        fprintf(archivoTablaDeSimbolos,"|%s|%s|%s|\n",(tablaDeSimbolos)->info.lexema,(tablaDeSimbolos)->info.tipo,(tablaDeSimbolos)->info.valor);
+        printf(" %-40s\t%-10s\t%-40s\t%-5s\n", (*tablaDeSimbolos).info.lexema,  (*tablaDeSimbolos).info.tipo,  (*tablaDeSimbolos).info.valor, (*tablaDeSimbolos).info.longitud);
+        fprintf(archivoTablaDeSimbolos,"%-40s\t%-10s\t%-40s\t%-5s\n",(tablaDeSimbolos)->info.lexema,(tablaDeSimbolos)->info.tipo,(tablaDeSimbolos)->info.valor, (*tablaDeSimbolos).info.longitud);
 
         tablaDeSimbolos = (*tablaDeSimbolos).sig;
     }
@@ -220,7 +249,7 @@ void yyerror(const char *str)
 
 void crearTablaDeSimbolos(tLista * pl)
 {
-    printf("cree la lista\n");
+    //printf("cree la lista\n");
     *pl=NULL;
 }
 
@@ -241,13 +270,11 @@ int buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
         contador++;
         if( (comparar(yytext, &(*tablaDeSimbolos)->info) == 0))
         {
-            printf("\nEl identificador: %s  esta duplicado\n",yytext);
+            // printf("\nEl identificador: %s  esta duplicado\n",yytext);
             return 0;
         }
         else
         {
-
-
             tablaDeSimbolos = &(*tablaDeSimbolos)->sig;
         }
     }
@@ -266,9 +293,11 @@ int insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
     dato.valor = (char*) malloc(sizeof(char[yyleng + 1]));
     dato.tipo = (char*) malloc(sizeof(char));
     dato.lexema = (char*) malloc(sizeof(char[yyleng+2]));
+    dato.longitud = (char*) malloc(sizeof(yyleng));
 
     strcpy(dato.valor,yytext);
-    strcpy(dato.tipo,"");
+    strcpy(dato.tipo,"-");
+    strcpy(dato.longitud,"-");
     strcpy(dato.lexema,"_");
     strcat(dato.lexema,yytext);
 
