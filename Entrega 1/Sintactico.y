@@ -159,7 +159,6 @@ get: GET ID {printf("\n Regla - get: GET ID \n");}
 condicion: comparacion {printf("\n Regla - condicion: comparacion \n");}
   | comparacion logic_concatenator comparacion {printf("\n Regla - condicion: comparacion logic_concatenator comparacion \n");}
   | NOT comparacion  {printf("\n Regla - condicion: NOT comparacion \n");}
-  | NOT P_A comparacion P_C {printf("\n Regla - condicion: NOT comparacion \n");}
   | NOT factor {printf("\n Regla - condicion: NOT factor \n");}
   | factor {printf("\n Regla - condicion: factor \n");}
   ;
