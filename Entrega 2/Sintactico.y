@@ -3,25 +3,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h> 
+#include "until.h"
+#include "tercetos.h"
 #define YYDEBUG 1
 
-typedef struct
-{
-  char *lexema;
-  char *tipo;
-  char *valor;
-  char *longitud;
-}tInfo;
+/*Esta estructura se puede obviar pero queda mas legible si manejamos todos los indices de los 
+tercetos con una estructura. */
 
-typedef tInfo tDato;
+typedef union indice {
+    tDato * punteroSimbolo;
+    terceto * punteroTerceto;
+} indice;
 
-typedef struct sNodo
-{
-  tDato info;
-  struct sNodo *sig;
-}tNodo;
-
-typedef tNodo *tLista; 
+/* Punteros y pilas para expresiones */
+indice indExpr,indTerm, indFact, indComp; //Punteros a la tabla de simbolos.
+pila pilaExpr, pilaTerm, pilaFact; 
 
 int comparar(char *yytext , tDato *dato );
 void crearTablaDeSimbolos(tLista *pl);
@@ -179,20 +175,31 @@ logic_concatenator: OR {printf("\n Regla - logic_concatenator: OR \n");}
   | AND {printf("\n Regla - logic_concatenator: AND \n");}
   ;
 
-expresion: expresion OP_SUMA termino {printf("\n Regla - expresion: expresion OP_SUMA termino\n");}
+expresion: expresion {apilar(&pilaExpr, indExpr);} OP_SUMA termino {printf("\n Regla - expresion: expresion OP_SUMA termino\n"); indExpr = crearTercetoOperacion("+", desapilar(&pilaExpr), indTerm);}
   | expresion OP_RESTA termino { printf("\n Regla - expresion: expresion OP_RESTA termino\n");}
-  | termino {printf("\n Regla - expresion: termino\n");}
+  | termino {printf("\n Regla - expresion: termino\n"); indExpr = indTerm;}
   ;
 
 termino: termino OP_MULT factor {printf("\n Regla - termino: termino OP_MULT factor\n");}
   | termino OP_DIV factor {printf("\n Regla - termino: termino OP_DIV factor\n");}
-  | factor {printf("\n Regla - termino: factor\n");}
+  | factor {printf("\n Regla - termino: factor\n"); indTerm = indFact; }
   ;
 
-factor: ID {printf("\n Regla - factor: ID \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
-  | CTE_INT { printf("\n Regla - factor: CTE_INT \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
-  | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
-  | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n"); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
+factor: ID 
+          {
+              printf("\n Regla - factor: ID \n"); 
+              /* Modificar la funcion buscarEnTablaDeSimbolos() para que devuelva el puntero del simbolo en caso
+              de que exista o que lo inserte. */
+              indFact =  buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);
+        
+      
+          }
+
+
+
+  | CTE_INT { printf("\n Regla - factor: CTE_INT \n");      indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);} 
+  | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n");    indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
+  | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n"); indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
   | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n");}
   | maximo { printf("\n Regla - factor: maximo \n");}
   ;
@@ -311,4 +318,10 @@ void validarVariables() {
       exit(1);
     }
 
+}
+/*  Esta función es para cualquier cosa que se necesite hacer antes de iniciar con el parsing.*/
+void inicializarCompilador() {
+    inicializarPila(&pilaExpr);
+    inicializarPila(&pilaTerm);
+    inicializarPila(&pilaFact);
 }
