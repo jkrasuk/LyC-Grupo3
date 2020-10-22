@@ -3,10 +3,14 @@
 #include <conio.h>
 #include <string.h>
 
+extern int yylineno;
+/*  Son los nombres de cada tipo */
+const char* nombreTiposVal[4] = {"indefinido", "string", "entero", "real" };
+
 typedef struct
 {
   char *lexema;
-  char *tipo;
+  char *tipo; 
   char *valor;
   char *longitud;
 }tInfo;
@@ -21,6 +25,14 @@ typedef struct sNodo
 
 typedef tNodo *tLista;
 
+/*  Estas estructuras son para optimizar la generación de tercetos.
+    Un índice puede apuntar a la lista de tercetos o a la lista
+    de símbolos según sea su tipo. */
+typedef enum tipoIndice {
+    esSimbolo,
+    esTerceto
+} tipoIndice;
+
 
 /*  Para que sea mas facil de identificar los tipos de las variables que maneja 
     nuestro compilador. 
@@ -30,14 +42,27 @@ typedef enum tipoValor {
     indefinido,  //0
     string,		 //1
     entero,		 //2	
-    real,		 //3	
+    real,		 //3
+    constante,	
 } tipoValor;
 
+typedef struct Datoindice {
+  tDato * punteroSimbolo;
+  int indiceTerceto;
+} Datoindice;
+
+/*Esta estructura se puede obviar pero queda mas legible si manejamos todos los indices de los 
+tercetos con una estructura. */
+
+typedef struct indice {
+    Datoindice datoind;
+     tipoIndice tipo;
+} indice;
 
 
-/* Pila para almacenar punteros a los datos en la ts. */
+/* Pila para almacenar indices de los tercetos. */
 typedef struct nodoPila {
-  tDato dato;
+  indice dato;
   struct nodoPila* sig;
 } nodoPila;
 
@@ -45,7 +70,6 @@ typedef nodoPila* pila;
 
 void inicializarPila(pila* p);
 void apilar(pila* p, indice val);
-indice mirarTope(pila* p);
 indice desapilar(pila* p);
 
 void inicializarPila(pila* p) {
