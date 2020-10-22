@@ -5,7 +5,7 @@
 
 extern int yylineno;
 /*  Son los nombres de cada tipo */
-const char* nombreTiposVal[4] = {"indefinido", "string", "entero", "real" };
+const char* nombreTiposVal[5] = {"indefinido", "string", "entero", "real", "constante" };
 
 typedef struct
 {

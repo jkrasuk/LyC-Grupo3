@@ -1,0 +1,7 @@
+
+--- TERCETOS ---
+
+1: (=, _nombre, _85)
+2: (=, _contador, _0)
+
+--- TERCETOS ---

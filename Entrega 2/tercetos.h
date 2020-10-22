@@ -43,6 +43,9 @@ typedef struct terceto {
     tipoValor tipoVal;
 } terceto;
 
+char* buscarEnTablaDeSimbolosSinTabla(char *yytext);
+char* obtenerValorTerceto(char * nombre);
+tipoValor obtenerTipoTerceto(char * nombre);
 elemento crearElemStr(const char*);
 elemento crearElemInt(int);
 indice crearTerceto(elemento, elemento, elemento, tipoValor, tipoTerceto);
@@ -82,13 +85,13 @@ indice crearTerceto(elemento e1, elemento e2, elemento e3, tipoValor tipoV, tipo
     t.elementos[2] = e3;
     t.tipoVal = tipoV;
     t.tipoTerc = tipoT;
-
     /* Agregamos el terceto al array global de tercetos */
     tercetos[indTercetos] = t;
     ind.tipo = esTerceto;
     ind.datoind.indiceTerceto = indTercetos;
     indTercetos++;
 
+imprimirTercetosPantalla();
     /* Devolvemos el índice que apunta al terceto creado */
     return ind;
 }
@@ -99,24 +102,46 @@ indice crearTerceto(elemento e1, elemento e2, elemento e3, tipoValor tipoV, tipo
 
 indice crearTercetoOperacion(const char* op, indice ind1, indice ind2) {
     elemento elem1, elem2;
-    tipoValor tipo1, tipo2, tipoResultado;
+    tipoValor tipo1, tipo2, tipoConstante, tipoResultado;
     tipoTerceto tipoT;
 
     if (ind1.tipo == esTerceto) {
+        printf("\n 1 es terceto");
         elem1 = crearElemInt(ind1.datoind.indiceTerceto);
         tipo1 = tercetos[ind1.datoind.indiceTerceto].tipoVal;
     } else { /* El índice es de un símbolo */
+                printf("\n 1 no es terceto");
         elem1 = crearElemStr(ind1.datoind.punteroSimbolo->lexema);
         tipo1 = obtenerTipoSimbolo(ind1.datoind.punteroSimbolo->tipo);
     }
+            printf("%d\n", ind1.tipo);
 
+        printf("%d\n", ind2.tipo);
     if (ind2.tipo == esTerceto) {
+                printf("\n 2 es terceto");
         elem2 = crearElemInt(ind2.datoind.indiceTerceto);
         tipo2 = tercetos[ind2.datoind.indiceTerceto].tipoVal;
+
     } else {
+                printf("\n 2 no es terceto");
+
         elem2 = crearElemStr(ind2.datoind.punteroSimbolo->lexema);
         tipo2 = obtenerTipoSimbolo(ind2.datoind.punteroSimbolo->tipo);
     }
+        printf("\n %d \n", tipo2);
+
+    if(tipo2 == constante){
+        printf("TENGO UNA CONSTANTE\n" );
+        printf("\n\n %d \n\n", obtenerTipoTerceto(ind2.datoind.punteroSimbolo->lexema));
+        tipo2 = obtenerTipoTerceto(ind2.datoind.punteroSimbolo->lexema);
+//         char valor[20] = "";
+
+//         strcpy(valor, buscarEnTablaDeSimbolosSinTabla(obtenerValorTerceto(ind2.datoind.punteroSimbolo->lexema)));
+// printf("% s - num %s\n",   resultado,   ind2.datoind.punteroSimbolo->lexema);
+
+
+    }
+        printf("\n\n %s %s \n\n", nombreTiposVal[tipo1], nombreTiposVal[tipo2]);
 
     /* Validamos que los tipos de la expresión sean compatibles (esto hay que definirlo entre todos por ahora yo tome este criterio de validación)*/
     if (tipo1 == tipo2) {
@@ -168,20 +193,89 @@ indice crearTercetoAsignacion(indice ind1, indice ind2) {
         elem2 = crearElemInt(ind2.datoind.indiceTerceto);
         tipo2 = tercetos[ind2.datoind.indiceTerceto].tipoVal;
     } else {
+        // ACA CREA EL STR //
         elem2 = crearElemStr(ind2.datoind.punteroSimbolo->lexema);
         tipo2 = obtenerTipoSimbolo(ind2.datoind.punteroSimbolo->tipo);
     }
+        printf("\nasignar un %s a una variable de tipo %s.", nombreTiposVal[tipo2], nombreTiposVal[tipo1]);
+
 
     /*  La razón por la cuál se necesitó hacer una función aparte solo para las
         asignaciones es porque la validación de tipo es diferente a la que se hace 
         en crearTercetoOperación. */
-    if (tipo1 == tipo2 || (tipo1 == real && tipo2 == entero && tipo1 != constante )) { 
+    if (tipo1 == tipo2 || (tipo1 == real && tipo2 == entero) || (tipo1 == constante && (tipo2 == real || tipo2 == entero))) { 
         return crearTerceto(crearElemStr("="), elem1, elem2, tipo1, esAsignacion);
     } else {
         printf("\nError en la linea %d: Se intento asignar un %s a una variable de tipo %s.", 
                 yylineno, nombreTiposVal[tipo2], nombreTiposVal[tipo1]);
         exit(1);
     }
+}
+void imprimirTercetosPantalla() {
+    int i, j;
+
+    fprintf(stdout, "\n--- TERCETOS ---\n\n");
+    for (i = 0; i < indTercetos; i++) {
+        terceto t = tercetos[i];
+        fprintf(stdout, "%d: (", i + 1);
+
+        for (j = 0; j < 3; j++) {
+            elemento e = t.elementos[j];
+
+            switch (e.tipo) {
+                case string:
+                    fprintf(stdout, "%s", e.valor.cad);
+                    break;
+                case entero: /* Si es entero, es un índice y le sumamos 1 al mostrarlo */
+                    fprintf(stdout, "[%d]", e.valor.ind + 1);
+                    break;
+                default:
+                    fprintf(stdout, "_");
+            }
+
+            if (j < 2) {
+                fprintf(stdout, ", ");
+            } 
+        }
+        fprintf(stdout, ")");
+        fprintf(stdout, "\n");
+    }
+    fprintf(stdout,"\n--- TERCETOS ---\n");
+        system("Pause");
+
+}
+
+char* obtenerValorTerceto(char * nombre) {
+    int i, j;
+
+    for (i = 0; i < indTercetos; i++) {
+        terceto t = tercetos[i];
+        elemento e = t.elementos[1];
+        elemento e1 = t.elementos[2];
+        if(strcmp(nombre, e.valor.cad) == 0){
+            //fprintf(stdout, "%s - %s - %s", nombre, e.valor.cad, e1.valor.cad);
+            return e1.valor.cad;
+        }
+    }
+
+    return "";
+}
+
+tipoValor obtenerTipoTerceto(char * nombre) {
+    int i, j;
+
+    for (i = 0; i < indTercetos; i++) {
+        terceto t = tercetos[i];
+        elemento e = t.elementos[1];
+        elemento e1 = t.elementos[2];
+                fprintf(stdout, "%s\n", nombre);
+        fprintf(stdout, "%d - %s\n", e1.valor.ind, nombreTiposVal[e1.tipo]);
+        // if(strcmp(nombre, e.valor.cad) == 0){
+        //     return e1.tipo;
+        // }
+    }
+
+    return indefinido;
 }
 
 void imprimirTercetos() {

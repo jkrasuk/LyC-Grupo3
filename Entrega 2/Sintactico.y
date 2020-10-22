@@ -21,7 +21,6 @@ indice indExpr,indTerm, indFact, indComp; //Punteros a la tabla de simbolos o al
 /* Este array sirve para guardar los simbolos de la ts para que cuando llegue al bloque de declaracion de tipos le asigne el tipo a cada uno.*/
 indice tiposVariablesDeclaracion[700];
 
-
 indice auxindice;
 int comparar(char *yytext , tDato *dato );
 void inicializarCompilador();
@@ -180,13 +179,13 @@ asignacion: ID ASIG expresion {
                               }
   ;
 
-asignacion_constante: CONST ID /*{  //NO SE PORQUE NO ANDA ESTA REGLA AL AGREGARLE LA FUNCINOALIDAD DE TERCETOS.
+asignacion_constante: CONST ID {
                                 auxindice = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);
                                 cargarConstante(auxindice,constante);
-                               }*/
+                               }
                 ASIG expresion {
                                 printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");
-                                //crearTercetoAsignacion(auxindice,indExpr);
+                                crearTercetoAsignacion(auxindice,indExpr);
                                }
     ;
 
@@ -334,9 +333,30 @@ indice buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
         }
     }
 
-    return insertarEnTablaDeSimbolos(yytext,tablaDeSimbolos);
+  return insertarEnTablaDeSimbolos(yytext, tablaDeSimbolos);
 }
 
+char* buscarEnTablaDeSimbolosSinTabla(char *yytext)
+{
+    indice ind;
+    char test[10] = "prueba";
+    while(tablaDeSimbolos )
+    {
+    printf("\n\n%s - %s - %s\n\n", yytext, tablaDeSimbolos->info.lexema, tablaDeSimbolos->info.valor);
+        if( (strcmp(yytext, tablaDeSimbolos->info.lexema) == 0))
+        {
+            
+            return tablaDeSimbolos->info.valor;
+        }
+        else
+        {
+
+            tablaDeSimbolos = tablaDeSimbolos->sig;
+        }
+    }
+
+    return test;
+}
 indice insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
 {
     int len = strlen(yytext);
@@ -361,6 +381,7 @@ indice insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
     nuevo->info = dato;
     nuevo->sig  = *tablaDeSimbolos;
     *tablaDeSimbolos = nuevo;
+
     return  crearIndice(esSimbolo,&nuevo->info); //devolvemos el indice del simbolo.
 }
 
