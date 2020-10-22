@@ -3,27 +3,37 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h> 
-#include "until.h"
-#include "tercetos.h"
+#include "tercetos.h"//incluye a tools.h
 #define YYDEBUG 1
 
-/*Esta estructura se puede obviar pero queda mas legible si manejamos todos los indices de los 
-tercetos con una estructura. */
+/*NOTA: No se crean tercetos por cada vez que identifica un ID o CTE. ej: (_1,_,_) ó (b,_,_). Directamente se crean los tercetos con 
+los operadores, sean aritmeticos o de asiganión.*/
 
-typedef union indice {
-    tDato * punteroSimbolo;
-    terceto * punteroTerceto;
-} indice;
 
-/* Punteros y pilas para expresiones */
-indice indExpr,indTerm, indFact, indComp; //Punteros a la tabla de simbolos.
+/* Punteros y pilas para expresiones*/
+/* En las expresiones con paréntesis se complico en poder anidar los tercetos, es por eso que se usaron pilas para los indices.*/
 pila pilaExpr, pilaTerm, pilaFact; 
 
-int comparar(char *yytext , tDato *dato );
-void crearTablaDeSimbolos(tLista *pl);
-int buscarEnTablaDeSimbolos(char *yytext , tLista *tablaDeSimbolos);
-int insertarEnTablaDeSimbolos (char *yytext , tLista *tablaDeSimbolos);
 
+indice indExpr,indTerm, indFact, indComp; //Punteros a la tabla de simbolos o al array globar de tercetos.
+
+
+/* Este array sirve para guardar los simbolos de la ts para que cuando llegue al bloque de declaracion de tipos le asigne el tipo a cada uno.*/
+indice tiposVariablesDeclaracion[700];
+
+
+indice auxindice;
+int comparar(char *yytext , tDato *dato );
+void inicializarCompilador();
+void crearTablaDeSimbolos(tLista *pl);
+indice buscarEnTablaDeSimbolos(char *yytext , tLista *tablaDeSimbolos);
+indice insertarEnTablaDeSimbolos (char *yytext , tLista *tablaDeSimbolos);
+indice crearIndice(int tipoIndice, void * dato_indice);
+void cargartipoVariable(int tipo,indice ind);
+void cargarConstanteReal  (indice ind,int tipo_real);
+void cargarConstanteEntera(indice ind,int tipo_entero);
+void cargarConstanteString(indice ind,int tipo_string);
+void cargarConstante(indice ind, int tipo_constante);
 tLista tablaDeSimbolos;
 
 extern int yylex();
@@ -33,8 +43,8 @@ extern FILE* yyin;
 extern int yylineno;
 extern int yyleng;
 extern char *yytext;
-int cantVariables;
-int cantTipoVariables;
+int cantVariables=0;
+int cantTipoVariables=0;
 
 void validarVariables();
 
@@ -83,7 +93,14 @@ void validarVariables();
 }
 %%
 
-programa: sentencia_declaracion algoritmo {printf("\n Regla - programa: sentencia_declaracion algoritmo \n");}
+programa: 
+          {
+              printf("Inicia COMPILADOR\n"); inicializarCompilador();
+          }
+          sentencia_declaracion algoritmo {
+                                            printf("\n Regla - programa: sentencia_declaracion algoritmo \n");
+                                            imprimirTercetos();
+                                          }
   ;
 
 sentencia_declaracion: sentencia_declaracion bloque_declaracion_variables {printf("\n Regla - sentencia_declaracion: sentencia_declaracion bloque_declaracion_variables \n");}
@@ -93,17 +110,46 @@ sentencia_declaracion: sentencia_declaracion bloque_declaracion_variables {print
 bloque_declaracion_variables: DIM MENOR lista_variables MAYOR AS MENOR tipos_variables MAYOR {printf("\n Regla - bloque_declaracion_variables: DIM MENOR declaracion_variables MAYOR AS MENOR tipos_variables MAYOR \n"); validarVariables();}
   ;
 
-lista_variables: lista_variables COMA ID   {printf("\n Regla - lista_variables: lista_variables COMA ID \n"); cantVariables++; buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
-|ID {printf("\n Regla - lista_variables: ID \n");cantVariables++; buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
+lista_variables: lista_variables COMA ID  
+  {
+    printf("\n Regla - lista_variables: lista_variables COMA ID \n"); 
+    
+    auxindice = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);
+    /*Guardamos el indice del simbolo para despues asignarle el tipo a cada uno.*/
+    tiposVariablesDeclaracion[cantVariables] = auxindice;
+    cantVariables++; 
+  }
+|ID 
+  {
+    printf("\n Regla - lista_variables: ID \n");
+    
+    auxindice = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);
+    /*Guardamos el indice del simbolo para despues asignarle el tipo a cada uno.*/
+    tiposVariablesDeclaracion[cantVariables] = auxindice;
+    cantVariables++; 
+  }
   ;
 
-tipos_variables: tipos_variables COMA tipo_variable {printf("\n Regla - lista_variables: lista_variables COMA tipo_variable \n"); cantTipoVariables++;}
-|tipo_variable {printf("\n Regla - lista_variables: tipo_variable \n"); cantTipoVariables++;} 
+tipos_variables: tipos_variables COMA tipo_variable {printf("\n Regla - lista_variables: lista_variables COMA tipo_variable \n"); }
+|tipo_variable {printf("\n Regla - lista_variables: tipo_variable \n"); } 
 ;
 
-tipo_variable: INTEGER {printf("\n Regla - tipo_variable: INTEGER \n");}
-  | FLOAT {printf("\n Regla - tipo_variable: FLOAT \n");}
-  | STRING {printf("\n Regla - tipo_variable: STRING \n");}
+tipo_variable:   /*Aca ya se puede dar valor al tipo de lexema en la tabla de simbolo usando el array de indice de simbolos. */                                       
+    INTEGER {
+              printf("\n Regla - tipo_variable: INTEGER \n");   
+              cargartipoVariable(entero,tiposVariablesDeclaracion[cantTipoVariables]);
+              cantTipoVariables++;
+            }
+  | FLOAT   {
+             printf("\n Regla - tipo_variable: FLOAT \n");    
+             cargartipoVariable(real,tiposVariablesDeclaracion[cantTipoVariables]);
+             cantTipoVariables++; 
+            }
+  | STRING  {
+              printf("\n Regla - tipo_variable: STRING \n");   
+              cargartipoVariable(string,tiposVariablesDeclaracion[cantTipoVariables]);
+              cantTipoVariables++;
+            }
   ;
 
 algoritmo: bloque {printf("\n Regla - algoritmo: bloque \n");}
@@ -127,11 +173,22 @@ decision: IF P_A condicion P_C L_A bloque L_C ELSE L_A bloque L_C {printf("\n Re
   | IF P_A condicion P_C L_A bloque L_C {printf("\n Regla - decision: IF P_A condicion P_C L_A bloque L_C \n");}
   ;
 
-asignacion: ID ASIG expresion {printf("\n Regla - asignacion: ID ASIG expresion \n");}
+asignacion: ID ASIG expresion {
+                                printf("\n Regla - asignacion: ID ASIG expresion \n"); 
+                                printf("\n lexema en la asignacion %s \n",$1);
+                                crearTercetoAsignacion(buscarEnTablaDeSimbolos($1,&tablaDeSimbolos),indExpr);
+                              }
   ;
 
-asignacion_constante: CONST ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);} ASIG expresion {printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");}
-  ;
+asignacion_constante: CONST ID /*{  //NO SE PORQUE NO ANDA ESTA REGLA AL AGREGARLE LA FUNCINOALIDAD DE TERCETOS.
+                                auxindice = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);
+                                cargarConstante(auxindice,constante);
+                               }*/
+                ASIG expresion {
+                                printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");
+                                //crearTercetoAsignacion(auxindice,indExpr);
+                               }
+    ;
 
 lista_expresiones: lista_expresiones COMA termino {printf("\n Regla - lista_expresiones:  lista_expresiones COMA termino \n");}
  | termino {printf("\n Regla - lista_expresiones: termino \n");}
@@ -175,32 +232,30 @@ logic_concatenator: OR {printf("\n Regla - logic_concatenator: OR \n");}
   | AND {printf("\n Regla - logic_concatenator: AND \n");}
   ;
 
-expresion: expresion {apilar(&pilaExpr, indExpr);} OP_SUMA termino {printf("\n Regla - expresion: expresion OP_SUMA termino\n"); indExpr = crearTercetoOperacion("+", desapilar(&pilaExpr), indTerm);}
-  | expresion OP_RESTA termino { printf("\n Regla - expresion: expresion OP_RESTA termino\n");}
-  | termino {printf("\n Regla - expresion: termino\n"); indExpr = indTerm;}
+expresion: expresion {apilar(&pilaExpr, indExpr);} OP_SUMA termino  { printf("\n Regla - expresion: expresion OP_SUMA termino\n");  indExpr = crearTercetoOperacion("+", desapilar(&pilaExpr), indTerm);}
+  |        expresion {apilar(&pilaExpr, indExpr);} OP_RESTA termino { printf("\n Regla - expresion: expresion OP_RESTA termino\n"); indExpr = crearTercetoOperacion("-", desapilar(&pilaExpr), indTerm);}
+  |        termino   {printf("\n Regla - expresion: termino\n"); indExpr = indTerm;}
   ;
 
-termino: termino OP_MULT factor {printf("\n Regla - termino: termino OP_MULT factor\n");}
-  | termino OP_DIV factor {printf("\n Regla - termino: termino OP_DIV factor\n");}
-  | factor {printf("\n Regla - termino: factor\n"); indTerm = indFact; }
+termino: 
+        termino {apilar(&pilaTerm, indTerm);}   OP_MULT factor {printf("\n Regla - termino: termino OP_MULT factor\n"); indTerm = crearTercetoOperacion("*", desapilar(&pilaTerm), indFact);  }
+  |     termino {apilar(&pilaTerm, indTerm);}   OP_DIV factor  {printf("\n Regla - termino: termino OP_DIV factor\n");  indTerm = crearTercetoOperacion("/", desapilar(&pilaTerm), indFact);  }
+  |     factor {printf("\n Regla - termino: factor\n"); indTerm = indFact; }
   ;
 
 factor: ID 
           {
               printf("\n Regla - factor: ID \n"); 
-              /* Modificar la funcion buscarEnTablaDeSimbolos() para que devuelva el puntero del simbolo en caso
-              de que exista o que lo inserte. */
-              indFact =  buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);
-        
-      
+              /* en este caso ya debería estar el ID en la ts no haría falta volver a insertarlo (podriamos sacarlo).*/
+              indFact =  buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);  
           }
 
 
 
-  | CTE_INT { printf("\n Regla - factor: CTE_INT \n");      indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);} 
-  | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n");    indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
-  | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n"); indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);}
-  | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n");}
+  | CTE_INT { printf("\n Regla - factor: CTE_INT \n");      indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); cargarConstanteEntera(indFact,entero);} 
+  | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n");    indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); cargarConstanteReal(indFact,real);}
+  | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n"); indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); cargarConstanteString(indFact,string);}
+  | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n"); indFact = indExpr;}
   | maximo { printf("\n Regla - factor: maximo \n");}
   ;
 
@@ -259,14 +314,17 @@ int comparar(char *yytext, tDato * dato )
 
 
 }
-
-int buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
+/*Devuelve un indice del simbolo, con este puede acceder al info del simbolo de la ts. (ver struct indice en tools.h)*/
+indice buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
 {
+    indice ind;
     while( *tablaDeSimbolos )
     {
         if( (comparar(yytext, &(*tablaDeSimbolos)->info) == 0))
         {
-            return 0;
+            ind.datoind.punteroSimbolo=&(*tablaDeSimbolos)->info;
+            ind.tipo=esSimbolo;
+            return ind;
         }
         else
         {
@@ -276,13 +334,10 @@ int buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
         }
     }
 
-
-    insertarEnTablaDeSimbolos(yytext,tablaDeSimbolos);
-
-    return 1;
+    return insertarEnTablaDeSimbolos(yytext,tablaDeSimbolos);
 }
 
-int insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
+indice insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
 {
     int len = strlen(yytext);
     tDato dato;
@@ -301,12 +356,62 @@ int insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
     tNodo * nuevo = (tNodo*) malloc (sizeof(tNodo));
 
     if(!nuevo)
-        return 0;
+        return;
 
     nuevo->info = dato;
     nuevo->sig  = *tablaDeSimbolos;
     *tablaDeSimbolos = nuevo;
-    return 1;
+    return  crearIndice(esSimbolo,&nuevo->info); //devolvemos el indice del simbolo.
+}
+
+indice crearIndice(int tipoIndice, void * dato_indice){
+
+      indice ind;
+
+      if(tipoIndice == esSimbolo){    
+        ind.datoind.punteroSimbolo=(tDato *)dato_indice; //dato del simbolo (es el mismo dato que tiene en la ts.).
+        ind.tipo=esSimbolo;
+        return ind;
+      }
+      if(tipoIndice == esTerceto){    
+        ind.datoind.indiceTerceto = (int *) dato_indice; //indice al array global de tercetos.
+        ind.tipo=esTerceto;
+        return ind;
+      }
+
+}
+void cargartipoVariable(int tipo,indice ind){
+  char * tipoT;
+  switch (tipo) {
+        case entero:
+            tipoT = "INTEGER";
+            break;
+        case string:
+            tipoT = "STRING";
+            break;
+        case real:
+            tipoT = "FLOAT";
+            break;
+        case constante:
+            tipoT = "CONST";
+            break;
+        default:
+            tipoT = "indefinido";
+            break;
+    }
+    ind.datoind.punteroSimbolo->tipo=tipoT;
+}
+void cargarConstanteReal(indice ind, int tipo_real){
+  ind.datoind.punteroSimbolo->tipo="FLOAT";
+}
+void cargarConstanteString(indice ind, int tipo_string){
+  ind.datoind.punteroSimbolo->tipo="STRING";
+}
+void cargarConstanteEntera(indice ind, int tipo_entero){
+  ind.datoind.punteroSimbolo->tipo="INTEGER";
+}
+void cargarConstante(indice ind, int tipo_constante){
+  ind.datoind.punteroSimbolo->tipo="CONST";
 }
 
 void validarVariables() {
@@ -325,3 +430,4 @@ void inicializarCompilador() {
     inicializarPila(&pilaTerm);
     inicializarPila(&pilaFact);
 }
+
