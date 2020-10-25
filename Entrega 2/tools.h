@@ -13,7 +13,7 @@ typedef struct
   char *lexema;
   char *tipo; 
   char *valor;
-  char *longitud;
+  int longitud;
 }tInfo;
 
 typedef tInfo tDato;

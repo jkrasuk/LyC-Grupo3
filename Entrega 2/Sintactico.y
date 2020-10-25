@@ -285,8 +285,8 @@ int main(int argc, char *argv[]) {
     }
 
     while (tablaDeSimbolos) {
-        printf(" %-40s\t%-10s\t%-40s\t%-5s\n", (*tablaDeSimbolos).info.lexema, (*tablaDeSimbolos).info.tipo, (*tablaDeSimbolos).info.valor, (*tablaDeSimbolos).info.longitud);
-        fprintf(archivoTablaDeSimbolos, "%-40s\t%-10s\t%-40s\t%-5s\n", (tablaDeSimbolos)->info.lexema, (tablaDeSimbolos)->info.tipo, (tablaDeSimbolos)->info.valor, (*tablaDeSimbolos).info.longitud);
+        printf(" %-40s\t%-10s\t%-40s\t%-5d\n", (*tablaDeSimbolos).info.lexema, (*tablaDeSimbolos).info.tipo, (*tablaDeSimbolos).info.valor, (*tablaDeSimbolos).info.longitud);
+        fprintf(archivoTablaDeSimbolos, "%-40s\t%-10s\t%-40s\t%-5d\n", (tablaDeSimbolos)->info.lexema, (tablaDeSimbolos)->info.tipo, (tablaDeSimbolos)->info.valor, (*tablaDeSimbolos).info.longitud);
 
         tablaDeSimbolos = (*tablaDeSimbolos).sig;
     }
@@ -341,15 +341,12 @@ char* buscarEnTablaDeSimbolosSinTabla(char *yytext)
     tLista * tablaDeSimbolosCopiaLocal = &tablaDeSimbolos;
     while(tablaDeSimbolosCopiaLocal )
     {
-      printf("\n%s - %s\n", yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema);
         if((strcmp(yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema) == 0))
         {
-                  printf("\n%s\n", (*tablaDeSimbolosCopiaLocal)->info.tipo);
             return (*tablaDeSimbolosCopiaLocal)->info.tipo;
         }
         else
         {
-
             tablaDeSimbolosCopiaLocal = &(*tablaDeSimbolosCopiaLocal)->sig;
         }
     }
@@ -364,11 +361,10 @@ indice insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
     dato.valor = (char *) malloc(sizeof(char[yyleng + 1]));
     dato.tipo = (char *) malloc(sizeof(char));
     dato.lexema = (char *) malloc(sizeof(char[yyleng + 2]));
-    dato.longitud = (char *) malloc(sizeof(yyleng));
+    dato.longitud = yyleng;
 
     strcpy(dato.valor, yytext);
     strcpy(dato.tipo, "-");
-    strcpy(dato.longitud, "-");
     strcpy(dato.lexema, "_");
     strcat(dato.lexema, yytext);
 
