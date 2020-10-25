@@ -20,7 +20,6 @@ indice indExpr,indTerm, indFact, indComp; //Punteros a la tabla de simbolos o al
 
 /* Este array sirve para guardar los simbolos de la ts para que cuando llegue al bloque de declaracion de tipos le asigne el tipo a cada uno.*/
 indice tiposVariablesDeclaracion[700];
-
 indice auxindice;
 int comparar(char *yytext , tDato *dato );
 void inicializarCompilador();
@@ -319,6 +318,7 @@ indice buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
     indice ind;
     while( *tablaDeSimbolos )
     {
+      printf("\n %s - %s", yytext, (*tablaDeSimbolos)->info);
         if( (comparar(yytext, &(*tablaDeSimbolos)->info) == 0))
         {
             ind.datoind.punteroSimbolo=&(*tablaDeSimbolos)->info;
@@ -339,23 +339,23 @@ indice buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
 char* buscarEnTablaDeSimbolosSinTabla(char *yytext)
 {
     indice ind;
-    char test[10] = "prueba";
-    while(tablaDeSimbolos )
+    tLista * tablaDeSimbolosCopiaLocal = &tablaDeSimbolos;
+    while(tablaDeSimbolosCopiaLocal )
     {
-    printf("\n\n%s - %s - %s\n\n", yytext, tablaDeSimbolos->info.lexema, tablaDeSimbolos->info.valor);
-        if( (strcmp(yytext, tablaDeSimbolos->info.lexema) == 0))
+      printf("\n%s - %s\n", yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema);
+        if((strcmp(yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema) == 0))
         {
-            
-            return tablaDeSimbolos->info.valor;
+                  printf("\n%s\n", (*tablaDeSimbolosCopiaLocal)->info.tipo);
+            return (*tablaDeSimbolosCopiaLocal)->info.tipo;
         }
         else
         {
 
-            tablaDeSimbolos = tablaDeSimbolos->sig;
+            tablaDeSimbolosCopiaLocal = &(*tablaDeSimbolosCopiaLocal)->sig;
         }
     }
 
-    return test;
+    return SIN_RESULTADOS;
 }
 indice insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
 {
@@ -382,7 +382,7 @@ indice insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
     nuevo->sig  = *tablaDeSimbolos;
     *tablaDeSimbolos = nuevo;
 
-    return  crearIndice(esSimbolo,&nuevo->info); //devolvemos el indice del simbolo.
+    return crearIndice(esSimbolo,&nuevo->info); //devolvemos el indice del simbolo.
 }
 
 indice crearIndice(int tipoIndice, void * dato_indice){
@@ -395,7 +395,7 @@ indice crearIndice(int tipoIndice, void * dato_indice){
         return ind;
       }
       if(tipoIndice == esTerceto){    
-        ind.datoind.indiceTerceto = (int *) dato_indice; //indice al array global de tercetos.
+        ind.datoind.indiceTerceto = (int) dato_indice; //indice al array global de tercetos.
         ind.tipo=esTerceto;
         return ind;
       }
