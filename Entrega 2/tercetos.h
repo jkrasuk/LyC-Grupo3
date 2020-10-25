@@ -43,6 +43,8 @@ typedef struct terceto {
     tipoValor tipoVal;
 } terceto;
 
+char* buscarEnTablaDeSimbolosSinTabla(char *yytext);
+char* obtenerValorTerceto(char * nombre);
 elemento crearElemStr(const char*);
 elemento crearElemInt(int);
 indice crearTerceto(elemento, elemento, elemento, tipoValor, tipoTerceto);
@@ -82,7 +84,6 @@ indice crearTerceto(elemento e1, elemento e2, elemento e3, tipoValor tipoV, tipo
     t.elementos[2] = e3;
     t.tipoVal = tipoV;
     t.tipoTerc = tipoT;
-
     /* Agregamos el terceto al array global de tercetos */
     tercetos[indTercetos] = t;
     ind.tipo = esTerceto;
@@ -116,6 +117,22 @@ indice crearTercetoOperacion(const char* op, indice ind1, indice ind2) {
     } else {
         elem2 = crearElemStr(ind2.datoind.punteroSimbolo->lexema);
         tipo2 = obtenerTipoSimbolo(ind2.datoind.punteroSimbolo->tipo);
+    }
+
+    if(tipo2 == constante){
+        char resultado[20] = "";
+
+        strcpy(resultado, buscarEnTablaDeSimbolosSinTabla(obtenerValorTerceto(ind2.datoind.punteroSimbolo->lexema)));
+
+        if(strcmp(resultado, "INTEGER") == 0){
+            tipo2 = entero;
+        } else if(strcmp(resultado, "STRING") == 0){
+            tipo2 = string;
+        } else if(strcmp(resultado, "FLOAT") == 0){
+            tipo2 = real;
+        } else{
+            tipo2 = indefinido;
+        }   
     }
 
     /* Validamos que los tipos de la expresión sean compatibles (esto hay que definirlo entre todos por ahora yo tome este criterio de validación)*/
@@ -172,16 +189,49 @@ indice crearTercetoAsignacion(indice ind1, indice ind2) {
         tipo2 = obtenerTipoSimbolo(ind2.datoind.punteroSimbolo->tipo);
     }
 
+     if(tipo2 == constante){
+        char resultado[20] = "";
+
+        strcpy(resultado, buscarEnTablaDeSimbolosSinTabla(obtenerValorTerceto(ind2.datoind.punteroSimbolo->lexema)));
+
+        if(strcmp(resultado, "INTEGER") == 0){
+            tipo2 = entero;
+        } else if(strcmp(resultado, "STRING") == 0){
+            tipo2 = string;
+        } else if(strcmp(resultado, "FLOAT") == 0){
+            tipo2 = real;
+        } else{
+            tipo2 = indefinido;
+        }   
+    }
+
+
+
     /*  La razón por la cuál se necesitó hacer una función aparte solo para las
         asignaciones es porque la validación de tipo es diferente a la que se hace 
         en crearTercetoOperación. */
-    if (tipo1 == tipo2 || (tipo1 == real && tipo2 == entero && tipo1 != constante )) { 
+    if (tipo1 == tipo2 || (tipo1 == real && tipo2 == entero) || (tipo1 == constante && (tipo2 == real || tipo2 == entero))) { 
         return crearTerceto(crearElemStr("="), elem1, elem2, tipo1, esAsignacion);
     } else {
         printf("\nError en la linea %d: Se intento asignar un %s a una variable de tipo %s.", 
                 yylineno, nombreTiposVal[tipo2], nombreTiposVal[tipo1]);
         exit(1);
     }
+}
+
+char* obtenerValorTerceto(char * nombre) {
+    int i, j;
+
+    for (i = 0; i < indTercetos; i++) {
+        terceto t = tercetos[i];
+        elemento e = t.elementos[1];
+        elemento e1 = t.elementos[2];
+        if(strcmp(nombre, e.valor.cad) == 0){
+            return e1.valor.cad;
+        }
+    }
+
+    return "";
 }
 
 void imprimirTercetos() {

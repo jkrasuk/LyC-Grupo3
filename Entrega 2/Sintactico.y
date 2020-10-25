@@ -20,8 +20,6 @@ indice indExpr,indTerm, indFact, indComp; //Punteros a la tabla de simbolos o al
 
 /* Este array sirve para guardar los simbolos de la ts para que cuando llegue al bloque de declaracion de tipos le asigne el tipo a cada uno.*/
 indice tiposVariablesDeclaracion[700];
-
-
 indice auxindice;
 int comparar(char *yytext , tDato *dato );
 void inicializarCompilador();
@@ -180,13 +178,13 @@ asignacion: ID ASIG expresion {
                               }
   ;
 
-asignacion_constante: CONST ID /*{  //NO SE PORQUE NO ANDA ESTA REGLA AL AGREGARLE LA FUNCINOALIDAD DE TERCETOS.
+asignacion_constante: CONST ID {
                                 auxindice = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);
                                 cargarConstante(auxindice,constante);
-                               }*/
+                               }
                 ASIG expresion {
                                 printf("\n Regla - asignacion_constante: CONST ID ASIG expresion \n");
-                                //crearTercetoAsignacion(auxindice,indExpr);
+                                crearTercetoAsignacion(auxindice,indExpr);
                                }
     ;
 
@@ -334,9 +332,30 @@ indice buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
         }
     }
 
-    return insertarEnTablaDeSimbolos(yytext,tablaDeSimbolos);
+  return insertarEnTablaDeSimbolos(yytext, tablaDeSimbolos);
 }
 
+char* buscarEnTablaDeSimbolosSinTabla(char *yytext)
+{
+    indice ind;
+    tLista * tablaDeSimbolosCopiaLocal = &tablaDeSimbolos;
+    while(tablaDeSimbolosCopiaLocal )
+    {
+      printf("\n%s - %s\n", yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema);
+        if((strcmp(yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema) == 0))
+        {
+                  printf("\n%s\n", (*tablaDeSimbolosCopiaLocal)->info.tipo);
+            return (*tablaDeSimbolosCopiaLocal)->info.tipo;
+        }
+        else
+        {
+
+            tablaDeSimbolosCopiaLocal = &(*tablaDeSimbolosCopiaLocal)->sig;
+        }
+    }
+
+    return SIN_RESULTADOS;
+}
 indice insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
 {
     int len = strlen(yytext);
@@ -361,7 +380,8 @@ indice insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
     nuevo->info = dato;
     nuevo->sig  = *tablaDeSimbolos;
     *tablaDeSimbolos = nuevo;
-    return  crearIndice(esSimbolo,&nuevo->info); //devolvemos el indice del simbolo.
+
+    return crearIndice(esSimbolo,&nuevo->info); //devolvemos el indice del simbolo.
 }
 
 indice crearIndice(int tipoIndice, void * dato_indice){
@@ -374,7 +394,7 @@ indice crearIndice(int tipoIndice, void * dato_indice){
         return ind;
       }
       if(tipoIndice == esTerceto){    
-        ind.datoind.indiceTerceto = (int *) dato_indice; //indice al array global de tercetos.
+        ind.datoind.indiceTerceto = (int) dato_indice; //indice al array global de tercetos.
         ind.tipo=esTerceto;
         return ind;
       }

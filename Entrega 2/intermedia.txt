@@ -1,0 +1,18 @@
+
+--- TERCETOS ---
+
+1: (=, _nombre, _85)
+2: (=, _contador, _0)
+3: (+, _02.5, _nombre)
+4: (=, _suma, [3])
+5: (+, _contador, _1)
+6: (=, _contador, [5])
+7: (/, _contador, _0.342)
+8: (*, _actual, _contador)
+9: (*, _contador, _nombre)
+10: (+, [7], [9])
+11: (=, _actual, [10])
+12: (+, _suma, _actual)
+13: (=, _suma, [12])
+
+--- TERCETOS ---

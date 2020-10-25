@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <string.h>
 
+#define SIN_RESULTADOS "NO_OK"
 extern int yylineno;
 /*  Son los nombres de cada tipo */
 const char* nombreTiposVal[5] = {"indefinido", "string", "entero", "real", "constante" };
