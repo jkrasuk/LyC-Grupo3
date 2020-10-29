@@ -15,6 +15,8 @@ typedef enum tipoTerceto {
     esMultiplicacion,
     esDivision,
     esComparacion,
+    esUnDesplazamiento, //salto
+    esMaximoEncontrado,
     esDesconocido
 } tipoTerceto;
 
@@ -47,10 +49,16 @@ char* buscarEnTablaDeSimbolosSinTabla(char *yytext);
 char* obtenerValorTerceto(char * nombre);
 elemento crearElemStr(const char*);
 elemento crearElemInt(int);
+elemento crearElemReal(const char*);
+elemento crearElemNull();
 indice crearTerceto(elemento, elemento, elemento, tipoValor, tipoTerceto);
 indice crearTercetoOperacion(const char* op, indice ind1, indice ind2);
 indice crearTercetoAsignacion(indice ind1, indice ind2);
 tipoValor obtenerTipoSimbolo(char * tipo);
+indice crearTercetoDesplazamiento(const char* op, int salto);
+void modificarDesplazamientoTerceto(indice ind, int salto);
+indice crearTercetoMaximoEncontrado(indice max);
+int obtenerIndiceTercetoSiguente();
 void imprimirTercetos();
 
 /* Índice global para tercetos */
@@ -58,7 +66,12 @@ int indTercetos = 0;
 /* Array de Tercetos */
 terceto tercetos[900];
 
-
+elemento crearElemReal(const char* str_float){
+    elemento e;
+    e.valor.cad = strdup(str_float);
+    e.tipo = real;
+    return e;
+}
 elemento crearElemStr(const char* str) {
     elemento e;
     e.valor.cad = strdup(str);
@@ -70,6 +83,11 @@ elemento crearElemInt(int ind) {
     elemento e;
     e.valor.ind = ind;
     e.tipo = entero;
+    return e;
+}
+elemento crearElemNull() {
+    elemento e;
+    e.tipo = indefinido;
     return e;
 }
 /*  Crear un terceto con los elementos pasados por parámetro y se Agregamos
@@ -138,7 +156,7 @@ indice crearTercetoOperacion(const char* op, indice ind1, indice ind2) {
     /* Validamos que los tipos de la expresión sean compatibles (esto hay que definirlo entre todos por ahora yo tome este criterio de validación)*/
     if (tipo1 == tipo2) {
         tipoResultado = tipo1;
-    } else if ((tipo1 == real && tipo2 == entero) || (tipo1 == entero && tipo2 == real)) { //lo pensé como los lenguajes de alto nivel que si sumas real a entero suma a la parte entera del real como corresponde.
+    } else if ((tipo1 == real && tipo2 == entero) || (tipo1 == entero && tipo2 == real)) { 
         tipoResultado = real;
     } else {
         printf("\nError Error en la linea %d: La operacion %s con esos tipos de datos no es compatible.", 
@@ -205,8 +223,6 @@ indice crearTercetoAsignacion(indice ind1, indice ind2) {
         }   
     }
 
-
-
     /*  La razón por la cuál se necesitó hacer una función aparte solo para las
         asignaciones es porque la validación de tipo es diferente a la que se hace 
         en crearTercetoOperación. */
@@ -218,7 +234,55 @@ indice crearTercetoAsignacion(indice ind1, indice ind2) {
         exit(1);
     }
 }
+/*  Similar a crearTercetoOperacion pero con CMP */
+indice crearTercetoComparacion(indice ind1, indice ind2) {
+    elemento elem1, elem2;
+    tipoValor tipo1, tipo2, tipoResultado;
+    tipoTerceto tipoT;
 
+     if (ind1.tipo == esTerceto) {
+        elem1 = crearElemInt(ind1.datoind.indiceTerceto);
+        tipo1 = tercetos[ind1.datoind.indiceTerceto].tipoVal;
+    } else { /* El índice es de un símbolo */
+        elem1 = crearElemStr(ind1.datoind.punteroSimbolo->lexema);
+        tipo1 = obtenerTipoSimbolo(ind1.datoind.punteroSimbolo->tipo);
+    }
+
+    if (ind2.tipo == esTerceto) {
+        elem2 = crearElemInt(ind2.datoind.indiceTerceto);
+        tipo2 = tercetos[ind2.datoind.indiceTerceto].tipoVal;
+    } else {
+        elem2 = crearElemStr(ind2.datoind.punteroSimbolo->lexema);
+        tipo2 = obtenerTipoSimbolo(ind2.datoind.punteroSimbolo->tipo);
+    }
+
+
+    /* Validamos que los tipos de la comparación sean compatibles */
+    if (tipo1 == tipo2) {
+        tipoResultado = tipo1;
+    } else if ((tipo1 == real && tipo2 == entero) || (tipo1 == entero && tipo2 == real)) {
+        tipoResultado = real;
+    } else {
+        printf("\nError Error en la linea %d: La comparacion entre %s y %s no es compatible.", 
+                yylineno, nombreTiposVal[tipo1], nombreTiposVal[tipo2]);
+        exit(1);
+    }
+
+    return crearTerceto(crearElemStr("CMP"), elem1, elem2, tipoResultado, esComparacion);
+}
+/*Al pasarle el valor 0 quiere decir que todavia no se conoce el valor de desplazamiento y luego se usara modificarDesplazamientoTerceto()*/
+indice crearTercetoDesplazamiento(const char* op, int salto) {
+    return crearTerceto(crearElemStr(op), crearElemInt(salto), crearElemNull(), indefinido, esUnDesplazamiento);
+}
+void modificarDesplazamientoTerceto(indice ind, int salto) {
+    tercetos[ind.datoind.indiceTerceto].elementos[1].valor.ind = salto;
+}
+int obtenerIndiceTercetoSiguente(){
+    return indTercetos;
+}
+indice crearTercetoMaximoEncontrado(indice max){
+return crearTerceto(crearElemStr(max.datoind.punteroSimbolo->lexema), crearElemNull(), crearElemNull(), real, esMaximoEncontrado);
+}
 char* obtenerValorTerceto(char * nombre) {
     int i, j;
 

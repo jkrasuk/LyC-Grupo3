@@ -12,10 +12,14 @@ los operadores, sean aritmeticos o de asiganión.*/
 
 /* Punteros y pilas para expresiones*/
 /* En las expresiones con paréntesis se complico en poder anidar los tercetos, es por eso que se usaron pilas para los indices.*/
-pila pilaExpr, pilaTerm, pilaFact; 
+pila pilaExpr, pilaTerm, pilaFact, pilaBusquedaMaximo; 
 
 
-indice indExpr,indTerm, indFact, indComp; //Punteros a la tabla de simbolos o al array globar de tercetos.
+
+indice indExpr,indTerm, indFact, indComp, indMaximo; //Punteros a la tabla de simbolos o al array globar de tercetos.
+
+indice aux_maximo,max; //variables para la semantica del maximo.
+
 
 
 /* Este array sirve para guardar los simbolos de la ts para que cuando llegue al bloque de declaracion de tipos le asigne el tipo a cada uno.*/
@@ -188,11 +192,48 @@ asignacion_constante: CONST ID {
                                }
     ;
 
-lista_expresiones: lista_expresiones COMA termino {printf("\n Regla - lista_expresiones:  lista_expresiones COMA termino \n");}
- | termino {printf("\n Regla - lista_expresiones: termino \n");}
+lista_expresiones: lista_expresiones COMA expresion 
+              {
+                /*Insertamos el resultado que trae expresion en aux_maximo*/
+                aux_maximo = buscarEnTablaDeSimbolos("aux",&tablaDeSimbolos);
+                cargartipoVariable(real,aux_maximo);
+                crearTercetoAsignacion(aux_maximo,indExpr);
+                crearTercetoComparacion(aux_maximo,max);
+                /*Insertamos el resultado que trae expresion en aux_maximo*/
+
+                /*Apilar*/
+                apilar(&pilaBusquedaMaximo,crearTercetoDesplazamiento("NO_ES_MAYOR",0));
+                /*Apilar*/ 
+
+                /*Avanzar*/ 
+                crearTercetoAsignacion(max,aux_maximo);
+                /*Avanzar*/
+
+                
+                modificarDesplazamientoTerceto(desapilar(&pilaBusquedaMaximo),obtenerIndiceTercetoSiguente());
+
+
+                printf("\n Regla - lista_expresiones:  lista_expresiones COMA termino \n");
+              }
+ | expresion 
+              {
+                crearTercetoAsignacion(max,indExpr);
+                printf("\n Regla - lista_expresiones: termino \n");
+              }
  ;
 
-maximo: MAXIMO P_A lista_expresiones P_C {printf("\n Regla - maximo: MAXIMO P_A lista_expresiones P_C \n");}
+maximo: MAXIMO  { 
+                  max = buscarEnTablaDeSimbolos("max",&tablaDeSimbolos); 
+                  cargartipoVariable(real,max); 
+                 
+                } 
+
+                P_A lista_expresiones P_C  
+
+               {
+                  indMaximo = crearTercetoMaximoEncontrado(max);
+                  printf("\n Regla - maximo: MAXIMO P_A lista_expresiones P_C \n");
+               }
   ;
 
 iteracion: WHILE P_A condicion P_C L_A bloque L_C {printf("\n Regla - iteracion: WHILE P_A condicion P_C L_A bloque L_C \n");}
@@ -254,7 +295,7 @@ factor: ID
   | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n");    indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); cargarConstanteReal(indFact,real);}
   | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n"); indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); cargarConstanteString(indFact,string);}
   | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n"); indFact = indExpr;}
-  | maximo { printf("\n Regla - factor: maximo \n");}
+  | maximo {printf("\n Regla - factor: maximo \n");         indFact = indMaximo;}
   ;
 
 %%
