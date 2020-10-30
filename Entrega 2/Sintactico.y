@@ -572,8 +572,6 @@ void generarCodigoIf() {
         indice indJump2 = desapilar(&pilaCond);
         indice indJump1 = desapilar(&pilaCond);
         indice indTag = crearTercetoTag();
-                printf("\n\n\n ESTOY ACA PERRO\n\n\n");
-
         modificarDesplazamientoTerceto(indJump1, indTag.datoind.indiceTerceto);
         modificarDesplazamientoTerceto(indJump2, indTag.datoind.indiceTerceto);
     }
