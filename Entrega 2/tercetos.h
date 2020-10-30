@@ -17,7 +17,8 @@ typedef enum tipoTerceto {
     esComparacion,
     esUnDesplazamiento, //salto
     esMaximoEncontrado,
-    esDesconocido
+    esDesconocido,
+    esEtiqueta
 } tipoTerceto;
 
 /*  Esta estructura es para identificar el tipo de elemento en el terceto:
@@ -60,6 +61,7 @@ void modificarDesplazamientoTerceto(indice ind, int salto);
 indice crearTercetoMaximoEncontrado(indice max);
 int obtenerIndiceTercetoSiguente();
 void imprimirTercetos();
+void negarTerceto(int);
 
 /* Índice global para tercetos */
 int indTercetos = 0;
@@ -356,6 +358,50 @@ void imprimirTercetos() {
         exit(1);
     }
 }
+
+/*  Crea un terceto de etiqueta. La etiqueta va a tener pegada el número de
+    terceto asociado. No sé si esto realmente es necesario hacerlo acá ya que
+    se podría diferenciar en la generación de assembler por más que diga solo
+    TAG, pero en la clase de Mara mostraba que en CGI tenían los números de 
+    terceto pegados así que para que quede igual lo modifiqué.
+*/
+indice crearTercetoTag() {
+    char tag[10];
+
+    /*  Nos fijamos si el último terceto creado también es un tag, de ser así
+        directamente devolvemos un indice que apunte a tal tag. Esto puede
+        pasar cuando hay ifs anidados por ejemplo*/
+    if(tercetos[indTercetos - 1].tipoTerc == esEtiqueta) {
+        indice ind;
+        ind.datoind.indiceTerceto = indTercetos - 1;
+        ind.tipo = esTerceto;
+        return ind;
+    }
+
+    sprintf(tag, "TAG%d", indTercetos + 1);
+    return crearTerceto(crearElemStr(tag), crearElemNull(), crearElemNull(), indefinido, esEtiqueta);
+}
+/* Niega la la condicion de un terceto */
+void negarTerceto(int numeroTerceto) {
+	if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, ">=") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "<";
+	 
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, ">") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "<=";
+	 
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "<=") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = ">";
+	 
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "<") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = ">=";
+	 
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "!=") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "==";
+	 
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "==") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "!=";
+}
+
 tipoValor obtenerTipoSimbolo(char * tipo){
 
         if(strcmp(tipo, "STRING")==0){

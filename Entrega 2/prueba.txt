@@ -19,6 +19,10 @@ while (contador <= 9) {
 PUT "La suma es: ";
 PUT suma;
 
+if (actual < nombre){
+	PUT "no es mayor que 2";
+}
+
 if (actual > 2 and actual <> 0){
 	PUT "actual  > que 2 y <> de cero";
 }

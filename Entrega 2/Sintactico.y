@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h> 
+#include "pila_int.h"
 #include "tercetos.h"//incluye a tools.h
 #define YYDEBUG 1
 
@@ -13,10 +14,11 @@ los operadores, sean aritmeticos o de asiganión.*/
 /* Punteros y pilas para expresiones*/
 /* En las expresiones con paréntesis se complico en poder anidar los tercetos, es por eso que se usaron pilas para los indices.*/
 pila pilaExpr, pilaTerm, pilaFact, pilaBusquedaMaximo, pilaCond; 
+pilaInt pilaTipoComp;
 
 
 
-indice indExpr,indTerm, indFact, indComp, indMaximo; //Punteros a la tabla de simbolos o al array globar de tercetos.
+indice indExpr,indTerm, indFact, indComp, indMaximo, indTipoComp; //Punteros a la tabla de simbolos o al array globar de tercetos.
 
 indice aux_maximo,max, indExprAux; //variables para la semantica del maximo.
 
@@ -36,6 +38,7 @@ void cargarConstanteReal  (indice ind,int tipo_real);
 void cargarConstanteEntera(indice ind,int tipo_entero);
 void cargarConstanteString(indice ind,int tipo_string);
 void cargarConstante(indice ind, int tipo_constante);
+void generarCodigoIf();
 tLista tablaDeSimbolos;
 
 extern int yylex();
@@ -81,8 +84,6 @@ void validarVariables();
 %type <strVal> CTE_STRING
 %type <strVal> ID
 
-// %type <auxLogicOperator> logic_operator
-%type <auxLogicOperator> logic_concatenator
 %start programa
 
 %union
@@ -170,8 +171,19 @@ sentencia: decision {printf("\n Regla - sentencia: decision \n");}
   | asignacion_constante  {printf("\n Regla - asignacion_constante \n");}
   ;
 
-decision: IF P_A condicion P_C L_A bloque L_C ELSE L_A bloque L_C {printf("\n Regla - decision: IF P_A condicion P_C L_A bloque L_C ELSE L_A bloque L_C \n");}
-  | IF P_A condicion P_C L_A bloque L_C {printf("\n Regla - decision: IF P_A condicion P_C L_A bloque L_C \n");}
+decision: IF P_A condicion P_C L_A bloque L_C 
+              {	indice indJmpAux = crearTercetoDesplazamiento("JMP", 0);
+								generarCodigoIf();
+								apilar(&pilaCond, indJmpAux);
+							}
+          ELSE L_A bloque L_C {
+                printf("\n Regla - decision: IF P_A condicion P_C L_A bloque L_C ELSE L_A bloque L_C \n");
+                modificarDesplazamientoTerceto(desapilar(&pilaCond), crearTercetoTag().datoind.indiceTerceto);
+              }
+  | IF P_A condicion P_C L_A bloque L_C {
+      printf("\n Regla - decision: IF P_A condicion P_C L_A bloque L_C \n");
+      generarCodigoIf();
+    }
   ;
 
 asignacion: ID ASIG expresion {
@@ -247,12 +259,21 @@ put: PUT ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); printf("\n Regl
 get: GET ID {printf("\n Regla - get: GET ID \n");}
   ;
 
-condicion: comparacion {printf("\n Regla - condicion: comparacion \n");}
-  | comparacion logic_concatenator comparacion {printf("\n Regla - condicion: comparacion logic_concatenator comparacion \n");}
-  | NOT comparacion  {printf("\n Regla - condicion: NOT comparacion \n");}
-  | NOT factor {printf("\n Regla - condicion: NOT factor \n");}
-  | factor {printf("\n Regla - condicion: factor \n");}
+condicion: comparacion {printf("\n Regla - condicion: comparacion \n"); apilarInt(&pilaTipoComp, comparacionSimple); }
+  | comparacion_doble {printf("\n Regla - condicion: comparacion_doble \n");}
+  | comparacion_negada {printf("\n Regla - condicion: comparacion_negada \n");}
   ;
+
+comparacion_negada:
+	NOT P_A comparacion P_C {	printf("  Regla - comparacion_negada: NOT P_A comparacion P_C "); apilarInt(&pilaTipoComp, comparacionSimple); }
+    ;
+
+comparacion_doble:
+	comparacion AND comparacion	{ printf("\n Regla - comparacion_doble: comparacion AND comparacion \n"); apilarInt(&pilaTipoComp, comparacionDobleAND); }
+	| P_A comparacion P_C AND P_A comparacion P_C 	{ printf("\n Regla - comparacion_doble: P_A comparacion P_C AND P_A comparacion P_C \n");  apilarInt(&pilaTipoComp, comparacionDobleAND); }
+  | comparacion OR comparacion 	{ printf("\n Regla - comparacion_doble: comparacion OR comparacion \n");  apilarInt(&pilaTipoComp, comparacionDobleOR); crearTercetoTag(); }
+  | P_A comparacion P_C OR P_A comparacion P_C 	{ printf("\n Regla - comparacion_doble: P_A comparacion P_C OR P_A comparacion P_C \n");  apilarInt(&pilaTipoComp, comparacionDobleOR); crearTercetoTag();}
+	;
 
 comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
     printf("\n Regla - comparacion: expresion IGUAL expresion \n");
@@ -302,10 +323,6 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   apilar(&pilaCond, crearTercetoDesplazamiento(">",0));
   /*Apilar*/ 
 };
-
-logic_concatenator: OR {printf("\n Regla - logic_concatenator: OR \n");}
-  | AND {printf("\n Regla - logic_concatenator: AND \n");}
-  ;
 
 expresion: expresion {apilar(&pilaExpr, indExpr);} OP_SUMA termino  { printf("\n Regla - expresion: expresion OP_SUMA termino\n");  indExpr = crearTercetoOperacion("+", desapilar(&pilaExpr), indTerm);}
   |        expresion {apilar(&pilaExpr, indExpr);} OP_RESTA termino { printf("\n Regla - expresion: expresion OP_RESTA termino\n"); indExpr = crearTercetoOperacion("-", desapilar(&pilaExpr), indTerm);}
@@ -522,5 +539,30 @@ void inicializarCompilador() {
     inicializarPila(&pilaExpr);
     inicializarPila(&pilaTerm);
     inicializarPila(&pilaFact);
+    inicializarPilaInt(&pilaTipoComp);
 }
 
+void generarCodigoIf() {
+    tipoComparacion tipoComp = desapilarInt(&pilaTipoComp);
+    
+    if (tipoComp == comparacionSimple) {
+        indice indTag = crearTercetoTag();
+        modificarDesplazamientoTerceto(desapilar(&pilaCond), indTag.datoind.indiceTerceto);
+    } else if (tipoComp == comparacionDobleOR) {
+        indice indJump2 = desapilar(&pilaCond);
+        indice indJump1 = desapilar(&pilaCond);
+        negarTerceto(indJump1.datoind.indiceTerceto);
+        indice indTag = crearTercetoTag();
+
+        modificarDesplazamientoTerceto(indJump1, indJump1.datoind.indiceTerceto + 3);
+        modificarDesplazamientoTerceto(indJump2, indTag.datoind.indiceTerceto);
+    } else { /* Es una comparación doble con AND */
+        indice indJump2 = desapilar(&pilaCond);
+        indice indJump1 = desapilar(&pilaCond);
+        indice indTag = crearTercetoTag();
+                printf("\n\n\n ESTOY ACA PERRO\n\n\n");
+
+        modificarDesplazamientoTerceto(indJump1, indTag.datoind.indiceTerceto);
+        modificarDesplazamientoTerceto(indJump2, indTag.datoind.indiceTerceto);
+    }
+}
