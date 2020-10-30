@@ -39,6 +39,7 @@ void cargarConstanteEntera(indice ind,int tipo_entero);
 void cargarConstanteString(indice ind,int tipo_string);
 void cargarConstante(indice ind, int tipo_constante);
 void generarCodigoIf();
+void imprimirTablaDeSimbolos();
 tLista tablaDeSimbolos;
 
 extern int yylex();
@@ -101,6 +102,9 @@ programa:
           }
           sentencia_declaracion algoritmo {
                                             printf("\n Regla - programa: sentencia_declaracion algoritmo \n");
+                                            printf("\n COMPILACION EXITOSA \n");
+                                            imprimirTablaDeSimbolos();
+                                            printf("\n");
                                             imprimirTercetos();
                                           }
   ;
@@ -359,7 +363,6 @@ factor: ID
 %%
 
 int main(int argc, char *argv[]) {
-    FILE *archivoTablaDeSimbolos;
 
     crearTablaDeSimbolos(&tablaDeSimbolos);
     yydebug = 0;
@@ -370,12 +373,16 @@ int main(int argc, char *argv[]) {
     }
 
     fclose(yyin);
-    printf("\n COMPILACION EXITOSA \n");
+
+    return 0;
+}
+void imprimirTablaDeSimbolos(){
+    FILE *archivoTablaDeSimbolos;
+
+    archivoTablaDeSimbolos = fopen("ts.txt", "wt");
 
     printf("\n TABLA DE SIMBOLOS\n");
     printf("\n %-40s\t%-10s\t%-40s\t%-5s", "NOMBRE", "TIPO DATO", "VALOR", "LONGITUD");
-
-    archivoTablaDeSimbolos = fopen("ts.txt", "wt");
 
     if (!archivoTablaDeSimbolos) {
         printf("no se pudo abrir el archivo");
@@ -389,10 +396,7 @@ int main(int argc, char *argv[]) {
 
         tablaDeSimbolos = (*tablaDeSimbolos).sig;
     }
-
-    return 0;
 }
-
 void yyerror(const char *str) {
     fprintf(stderr, "Error: %s en la linea %d\n", str, yylineno);
     system("Pause");
@@ -469,8 +473,11 @@ indice insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
 
     tNodo * nuevo = (tNodo*) malloc (sizeof(tNodo));
 
-    if(!nuevo)
-        return;
+    if(!nuevo){
+        indice ind;
+        ind.tipo=noEsNuevo;
+        return ind;
+    }
 
     nuevo->info = dato;
     nuevo->sig  = *tablaDeSimbolos;

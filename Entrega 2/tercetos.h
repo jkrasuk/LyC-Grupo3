@@ -326,9 +326,11 @@ void imprimirTercetos() {
     }
 
     fprintf(gci, "\n--- TERCETOS ---\n\n");
+    fprintf(stdout, "\n--- TERCETOS ---\n\n");
     for (i = 0; i < indTercetos; i++) {
         terceto t = tercetos[i];
         fprintf(gci, "%d: (", i + 1);
+        fprintf(stdout, "%d: (", i + 1);
 
         for (j = 0; j < 3; j++) {
             elemento e = t.elementos[j];
@@ -336,23 +338,30 @@ void imprimirTercetos() {
             switch (e.tipo) {
                 case string:
                     fprintf(gci, "%s", e.valor.cad);
+                    fprintf(stdout, "%s", e.valor.cad);
                     break;
                 case entero: /* Si es entero, es un índice y le sumamos 1 al mostrarlo */
                     fprintf(gci, "[%d]", e.valor.ind + 1);
+                    fprintf(stdout, "[%d]", e.valor.ind + 1);
                     break;
                 default:
                     fprintf(gci, "_");
+                    fprintf(stdout, "_");
             }
 
             if (j < 2) {
                 fprintf(gci, ", ");
+                fprintf(stdout, ", ");
             } 
         }
         fprintf(gci, ")");
+        fprintf(stdout, ")");
         fprintf(gci, "\n");
+        fprintf(stdout, "\n");
     }
     fprintf(gci,"\n--- TERCETOS ---\n");
-    
+    fprintf(stdout,"\n--- TERCETOS ---\n");
+
     if (fclose(gci) != 0) {
         printf("No se puede CERRAR el archivo de la lista de tercetos.");
         exit(1);

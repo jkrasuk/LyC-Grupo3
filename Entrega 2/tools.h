@@ -31,7 +31,8 @@ typedef tNodo *tLista;
     de símbolos según sea su tipo. */
 typedef enum tipoIndice {
     esSimbolo,
-    esTerceto
+    esTerceto,
+    noEsNuevo
 } tipoIndice;
 
 
