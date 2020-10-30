@@ -13,7 +13,7 @@ los operadores, sean aritmeticos o de asiganión.*/
 
 /* Punteros y pilas para expresiones*/
 /* En las expresiones con paréntesis se complico en poder anidar los tercetos, es por eso que se usaron pilas para los indices.*/
-pila pilaExpr, pilaTerm, pilaFact, pilaBusquedaMaximo, pilaCond; 
+pila pilaExpr, pilaTerm, pilaFact, pilaBusquedaMaximo, pilaCond, pilaWhile; 
 pilaInt pilaTipoComp;
 
 
@@ -247,7 +247,12 @@ maximo: MAXIMO  {
                }
   ;
 
-iteracion: WHILE P_A condicion P_C L_A bloque L_C {printf("\n Regla - iteracion: WHILE P_A condicion P_C L_A bloque L_C \n");}
+iteracion: WHILE { apilar(&pilaWhile, crearTercetoTag()); } 
+            P_A condicion P_C L_A bloque L_C {printf("\n Regla - iteracion: WHILE P_A condicion P_C L_A bloque L_C \n");
+																				      crearTercetoDesplazamiento("JMP", desapilar(&pilaWhile).datoind.indiceTerceto); // agrego un terceto con un salto al comienzo del while
+                                              indice indTag = crearTercetoTag();
+                                              modificarDesplazamientoTerceto(desapilar(&pilaCond), crearTercetoTag().datoind.indiceTerceto);
+																			      }
   ;
 
 put: PUT ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); printf("\n Regla - put: PUT ID \n");}
