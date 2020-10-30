@@ -256,6 +256,21 @@ indice crearTercetoComparacion(indice ind1, indice ind2) {
         tipo2 = obtenerTipoSimbolo(ind2.datoind.punteroSimbolo->tipo);
     }
 
+    if(tipo2 == constante){
+        char resultado[20] = "";
+
+        strcpy(resultado, buscarEnTablaDeSimbolosSinTabla(obtenerValorTerceto(ind2.datoind.punteroSimbolo->lexema)));
+
+        if(strcmp(resultado, "INTEGER") == 0){
+            tipo2 = entero;
+        } else if(strcmp(resultado, "STRING") == 0){
+            tipo2 = string;
+        } else if(strcmp(resultado, "FLOAT") == 0){
+            tipo2 = real;
+        } else{
+            tipo2 = indefinido;
+        }   
+    }
 
     /* Validamos que los tipos de la comparación sean compatibles */
     if (tipo1 == tipo2) {

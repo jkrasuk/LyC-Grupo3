@@ -12,13 +12,13 @@ los operadores, sean aritmeticos o de asiganión.*/
 
 /* Punteros y pilas para expresiones*/
 /* En las expresiones con paréntesis se complico en poder anidar los tercetos, es por eso que se usaron pilas para los indices.*/
-pila pilaExpr, pilaTerm, pilaFact, pilaBusquedaMaximo; 
+pila pilaExpr, pilaTerm, pilaFact, pilaBusquedaMaximo, pilaCond; 
 
 
 
 indice indExpr,indTerm, indFact, indComp, indMaximo; //Punteros a la tabla de simbolos o al array globar de tercetos.
 
-indice aux_maximo,max; //variables para la semantica del maximo.
+indice aux_maximo,max, indExprAux; //variables para la semantica del maximo.
 
 
 
@@ -49,7 +49,6 @@ int cantVariables=0;
 int cantTipoVariables=0;
 
 void validarVariables();
-
 %}
 %token ID CTE_INT CTE_STRING CTE_REAL
 %token ASIG OP_SUMA OP_RESTA OP_MULT OP_DIV
@@ -82,7 +81,7 @@ void validarVariables();
 %type <strVal> CTE_STRING
 %type <strVal> ID
 
-%type <auxLogicOperator> logic_operator
+// %type <auxLogicOperator> logic_operator
 %type <auxLogicOperator> logic_concatenator
 %start programa
 
@@ -255,17 +254,54 @@ condicion: comparacion {printf("\n Regla - condicion: comparacion \n");}
   | factor {printf("\n Regla - condicion: factor \n");}
   ;
 
-comparacion: expresion  logic_operator  expresion {printf("\n Regla - comparacion: expresion  logic_operator  expresion \n");}
-| P_A expresion logic_operator expresion P_C {printf("\n Regla - comparacion: P_A expresion logic_operator expresion P_C \n");}
-  ;
+comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
+    printf("\n Regla - comparacion: expresion IGUAL expresion \n");
+  indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
-logic_operator: IGUAL {printf("\n Regla - logic_operator: IGUAL \n");}
-  | DISTINTO {printf("\n Regla - logic_operator: DISTINTO \n");}
-  | MAYOR {printf("\n Regla - logic_operator: MAYOR \n");}
-  | MAYOR_IGUAL {printf("\n Regla - logic_operator: MAYOR_IGUAL \n");}
-  | MENOR {printf("\n Regla - logic_operator: MENOR \n");}
-  | MENOR_IGUAL {printf("\n Regla - logic_operator: MENOR_IGUAL \n");}
-  ;
+  /*Apilar*/
+  apilar(&pilaCond, crearTercetoDesplazamiento("!=",0));
+  /*Apilar*/ 
+} 
+| expresion { indExprAux = indExpr; } DISTINTO expresion {
+    printf("\n Regla - comparacion: expresion DISTINTO expresion \n");
+  indComp = crearTercetoComparacion(indExprAux, indExpr); 
+
+  /*Apilar*/
+  apilar(&pilaCond, crearTercetoDesplazamiento("==",0));
+  /*Apilar*/ 
+}
+| expresion { indExprAux = indExpr; } MAYOR expresion {
+    printf("\n Regla - comparacion: expresion MAYOR expresion \n");
+  indComp = crearTercetoComparacion(indExprAux, indExpr); 
+
+  /*Apilar*/
+  apilar(&pilaCond, crearTercetoDesplazamiento("<=",0));
+  /*Apilar*/ 
+} 
+| expresion { indExprAux = indExpr; } MENOR expresion {
+    printf("\n Regla - comparacion: expresion MENOR expresion \n");
+  indComp = crearTercetoComparacion(indExprAux, indExpr); 
+
+  /*Apilar*/
+  apilar(&pilaCond, crearTercetoDesplazamiento(">=",0));
+  /*Apilar*/ 
+}
+| expresion { indExprAux = indExpr; } MAYOR_IGUAL expresion {
+    printf("\n Regla - comparacion: expresion MAYOR_IGUAL expresion \n");
+  indComp = crearTercetoComparacion(indExprAux, indExpr); 
+
+  /*Apilar*/
+  apilar(&pilaCond, crearTercetoDesplazamiento("<",0));
+  /*Apilar*/ 
+} 
+| expresion { indExprAux = indExpr; } MENOR_IGUAL expresion {
+    printf("\n Regla - comparacion: expresion MENORR_IGUAL expresion \n");
+  indComp = crearTercetoComparacion(indExprAux, indExpr); 
+
+  /*Apilar*/
+  apilar(&pilaCond, crearTercetoDesplazamiento(">",0));
+  /*Apilar*/ 
+};
 
 logic_concatenator: OR {printf("\n Regla - logic_concatenator: OR \n");}
   | AND {printf("\n Regla - logic_concatenator: AND \n");}
