@@ -259,10 +259,10 @@ iteracion: WHILE { apilar(&pilaWhile, crearTercetoTag()); }
 																			      }
   ;
 
-put: PUT ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoDisplay($2); printf("\n Regla - put: PUT ID \n");}
-  | PUT CTE_INT {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoDisplayInt($2); printf("\n Regla - put: PUT CTE_INT \n");}
-  | PUT CTE_REAL {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoDisplayReal($2); printf("\n Regla - put: PUT CTE_REAL \n");}
-  | PUT CTE_STRING {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoDisplay($2); printf("\n Regla - put: PUT CTE_STRING \n");}
+put: PUT ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPut($2); printf("\n Regla - put: PUT ID \n");}
+  | PUT CTE_INT {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPutInt($2); printf("\n Regla - put: PUT CTE_INT \n");}
+  | PUT CTE_REAL {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPutReal($2); printf("\n Regla - put: PUT CTE_REAL \n");}
+  | PUT CTE_STRING {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPutString($2); printf("\n Regla - put: PUT CTE_STRING \n");}
   ;
    
 get: GET ID { crearTercetoGetID($2); printf("\n Regla - get: GET ID \n"); }
@@ -274,7 +274,7 @@ condicion: comparacion {printf("\n Regla - condicion: comparacion \n"); apilarIn
   ;
 
 comparacion_negada:
-	NOT P_A comparacion P_C {	printf("  Regla - comparacion_negada: NOT P_A comparacion P_C "); apilarInt(&pilaTipoComp, comparacionSimple); }
+	NOT P_A comparacion P_C {	printf("  Regla - comparacion_negada: NOT P_A comparacion P_C "); negarTerceto(indTercetos-1); apilarInt(&pilaTipoComp, comparacionSimple); }
     ;
 
 comparacion_doble:

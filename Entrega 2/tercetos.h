@@ -18,7 +18,7 @@ typedef enum tipoTerceto {
     esUnDesplazamiento, //salto
     esMaximoEncontrado,
     esGet,
-    esDisplay,
+    esPut,
     esDesconocido,
     esEtiqueta
 } tipoTerceto;
@@ -62,9 +62,10 @@ indice crearTercetoDesplazamiento(const char* op, int salto);
 void modificarDesplazamientoTerceto(indice ind, int salto);
 indice crearTercetoMaximoEncontrado(indice max);
 indice crearTercetoGetID(const char *val);
-indice crearTercetoDisplay(const char* val);
-indice crearTercetoDisplayInt(int val);
-indice crearTercetoDisplayReal(float val);
+indice crearTercetoPut(const char* val);
+indice crearTercetoPutString(const char* val);
+indice crearTercetoPutInt(int val);
+indice crearTercetoPutReal(float val);
 int obtenerIndiceTercetoSiguente();
 void imprimirTercetos();
 void negarTerceto(int);
@@ -311,20 +312,26 @@ indice crearTercetoGetID(const char* val){
     return crearTerceto(crearElemStr("GET"), crearElemStr(val), crearElemNull(), indefinido, esGet);
 }
 
-indice crearTercetoDisplay(const char* val){
-    return crearTerceto(crearElemStr("PUT"), crearElemStr(val), crearElemNull(), indefinido, esDisplay);
+indice crearTercetoPut(const char* val){
+    return crearTerceto(crearElemStr("PUT"), crearElemStr(val), crearElemNull(), indefinido, esPut);
 }
 
-indice crearTercetoDisplayReal(float val){
+indice crearTercetoPutReal(float val){
     char buffer[900];
     sprintf(buffer, "_%f", val);
-    return crearTerceto(crearElemStr("PUT"), crearElemStr(buffer), crearElemNull(), indefinido, esDisplay);
+    return crearTerceto(crearElemStr("PUT"), crearElemStr(buffer), crearElemNull(), indefinido, esPut);
 }
 
-indice crearTercetoDisplayInt(int val){
+indice crearTercetoPutString(const char* val){
+    char buffer[900];
+    sprintf(buffer, "%s", val);
+    return crearTerceto(crearElemStr("PUT"), crearElemStr(buffer), crearElemNull(), indefinido, esPut);
+}
+
+indice crearTercetoPutInt(int val){
     char buffer[900];
     sprintf(buffer, "_%d", val);
-    return crearTerceto(crearElemStr("PUT"), crearElemStr(buffer), crearElemNull(), indefinido, esDisplay);
+    return crearTerceto(crearElemStr("PUT"), crearElemStr(buffer), crearElemNull(), indefinido, esPut);
 }
 
 char* obtenerValorTerceto(char * nombre) {
@@ -419,23 +426,23 @@ indice crearTercetoTag() {
 }
 /* Niega la la condicion de un terceto */
 void negarTerceto(int numeroTerceto) {
-	if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, ">=") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = "<";
+	if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BGE") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "BLT";
 	 
-	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, ">") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = "<=";
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BGT") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "BLE";
 	 
-	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "<=") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = ">";
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BLE") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "BGT";
 	 
-	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "<") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = ">=";
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BLT") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "BGE";
 	 
-	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "!=") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = "==";
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BNE") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "BEQ";
 	 
-	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "==") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = "!=";
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BEQ") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "BNE";
 }
 
 tipoValor obtenerTipoSimbolo(char * tipo){
