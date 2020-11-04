@@ -17,6 +17,8 @@ typedef enum tipoTerceto {
     esComparacion,
     esUnDesplazamiento, //salto
     esMaximoEncontrado,
+    esGet,
+    esDisplay,
     esDesconocido,
     esEtiqueta
 } tipoTerceto;
@@ -59,6 +61,10 @@ tipoValor obtenerTipoSimbolo(char * tipo);
 indice crearTercetoDesplazamiento(const char* op, int salto);
 void modificarDesplazamientoTerceto(indice ind, int salto);
 indice crearTercetoMaximoEncontrado(indice max);
+indice crearTercetoGetID(const char *val);
+indice crearTercetoDisplay(const char* val);
+indice crearTercetoDisplayInt(int val);
+indice crearTercetoDisplayReal(float val);
 int obtenerIndiceTercetoSiguente();
 void imprimirTercetos();
 void negarTerceto(int);
@@ -300,6 +306,27 @@ int obtenerIndiceTercetoSiguente(){
 indice crearTercetoMaximoEncontrado(indice max){
 return crearTerceto(crearElemStr(max.datoind.punteroSimbolo->lexema), crearElemNull(), crearElemNull(), real, esMaximoEncontrado);
 }
+
+indice crearTercetoGetID(const char* val){
+    return crearTerceto(crearElemStr("GET"), crearElemStr(val), crearElemNull(), indefinido, esGet);
+}
+
+indice crearTercetoDisplay(const char* val){
+    return crearTerceto(crearElemStr("PUT"), crearElemStr(val), crearElemNull(), indefinido, esDisplay);
+}
+
+indice crearTercetoDisplayReal(float val){
+    char buffer[900];
+    sprintf(buffer, "_%f", val);
+    return crearTerceto(crearElemStr("PUT"), crearElemStr(buffer), crearElemNull(), indefinido, esDisplay);
+}
+
+indice crearTercetoDisplayInt(int val){
+    char buffer[900];
+    sprintf(buffer, "_%d", val);
+    return crearTerceto(crearElemStr("PUT"), crearElemStr(buffer), crearElemNull(), indefinido, esDisplay);
+}
+
 char* obtenerValorTerceto(char * nombre) {
     int i, j;
 

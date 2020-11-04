@@ -259,13 +259,13 @@ iteracion: WHILE { apilar(&pilaWhile, crearTercetoTag()); }
 																			      }
   ;
 
-put: PUT ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); printf("\n Regla - put: PUT ID \n");}
-  | PUT CTE_INT {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); printf("\n Regla - put: PUT CTE_INT \n");}
-  | PUT CTE_REAL {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); printf("\n Regla - put: PUT CTE_REAL \n");}
-  | PUT CTE_STRING {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); printf("\n Regla - put: PUT CTE_STRING \n");}
+put: PUT ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoDisplay($2); printf("\n Regla - put: PUT ID \n");}
+  | PUT CTE_INT {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoDisplayInt($2); printf("\n Regla - put: PUT CTE_INT \n");}
+  | PUT CTE_REAL {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoDisplayReal($2); printf("\n Regla - put: PUT CTE_REAL \n");}
+  | PUT CTE_STRING {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoDisplay($2); printf("\n Regla - put: PUT CTE_STRING \n");}
   ;
    
-get: GET ID {printf("\n Regla - get: GET ID \n");}
+get: GET ID { crearTercetoGetID($2); printf("\n Regla - get: GET ID \n"); }
   ;
 
 condicion: comparacion {printf("\n Regla - condicion: comparacion \n"); apilarInt(&pilaTipoComp, comparacionSimple); }
@@ -289,7 +289,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento("!=",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("BNE",0));
   /*Apilar*/ 
 } 
 | expresion { indExprAux = indExpr; } DISTINTO expresion {
@@ -297,7 +297,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento("==",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("BEQ",0));
   /*Apilar*/ 
 }
 | expresion { indExprAux = indExpr; } MAYOR expresion {
@@ -305,7 +305,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento("<=",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("BLE",0));
   /*Apilar*/ 
 } 
 | expresion { indExprAux = indExpr; } MENOR expresion {
@@ -313,7 +313,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento(">=",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("BGE",0));
   /*Apilar*/ 
 }
 | expresion { indExprAux = indExpr; } MAYOR_IGUAL expresion {
@@ -321,7 +321,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento("<",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("BLT",0));
   /*Apilar*/ 
 } 
 | expresion { indExprAux = indExpr; } MENOR_IGUAL expresion {
@@ -329,7 +329,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento(">",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("BGT",0));
   /*Apilar*/ 
 };
 
