@@ -15,6 +15,8 @@ _max                                    	FLOAT     	max                         
 _2                                      	INTEGER   	2                                       	1    
 _aux                                    	FLOAT     	aux                                     	1    
 _4                                      	INTEGER   	4                                       	1    
+_max1                                   	FLOAT     	max1                                    	6    
+_aux1                                   	FLOAT     	aux1                                    	1    
 _"La suma es: "                         	-         	"La suma es: "                          	14   
 _"no es mayor que 2"                    	-         	"no es mayor que 2"                     	19   
 _"actual  > que 2 y <> de cero"         	-         	"actual  > que 2 y <> de cero"          	30   

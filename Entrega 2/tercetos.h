@@ -17,6 +17,7 @@ typedef enum tipoTerceto {
     esComparacion,
     esUnDesplazamiento, //salto
     esMaximoEncontrado,
+    esMaximo,
     esGet,
     esPut,
     esDesconocido,
@@ -49,6 +50,7 @@ typedef struct terceto {
 } terceto;
 
 char* buscarEnTablaDeSimbolosSinTabla(char *yytext);
+tDato buscarAuxEnTablaDeSimbolosSinTabla();
 char* obtenerValorTerceto(char * nombre);
 elemento crearElemStr(const char*);
 elemento crearElemInt(int);
@@ -66,6 +68,7 @@ indice crearTercetoPut(const char* val);
 indice crearTercetoPutString(const char* val);
 indice crearTercetoPutInt(int val);
 indice crearTercetoPutReal(float val);
+indice crearTercetoMaximo();
 int obtenerIndiceTercetoSiguente();
 void imprimirTercetos();
 void negarTerceto(int);
@@ -305,7 +308,7 @@ int obtenerIndiceTercetoSiguente(){
     return indTercetos;
 }
 indice crearTercetoMaximoEncontrado(indice max){
-return crearTerceto(crearElemStr(max.datoind.punteroSimbolo->lexema), crearElemNull(), crearElemNull(), real, esMaximoEncontrado);
+    return crearTerceto(crearElemStr(max.datoind.punteroSimbolo->lexema), crearElemNull(), crearElemNull(), real, esMaximoEncontrado);
 }
 
 indice crearTercetoGetID(const char* val){
