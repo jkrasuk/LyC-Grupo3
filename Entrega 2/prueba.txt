@@ -10,7 +10,7 @@ suma = 02.5+nombre;
 
 while (contador <= 9) {
 	contador = contador + 1;
-	actual = maximo(1*2,suma,4, maximo(1, 2));
+	actual = (contador/0.342) + maximo (1*2, suma, 4, maximo(4,actual,nombre));
 	suma = suma + actual;
 };
 
