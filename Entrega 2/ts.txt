@@ -1,20 +1,10 @@
 NOMBRE                                  	TIPO DATO 	VALOR                                   	LONGITUD
-_contador                               	INTEGER   	contador                                	8    
-_promedio                               	FLOAT     	promedio                                	8    
+_a                                      	INTEGER   	a                                       	1    
+_b                                      	INTEGER   	b                                       	1    
+_c                                      	INTEGER   	c                                       	1    
+_d                                      	INTEGER   	d                                       	1    
 _actual                                 	FLOAT     	actual                                  	6    
-_suma                                   	FLOAT     	suma                                    	4    
-_nombre                                 	CONST     	nombre                                  	6    
-_85                                     	INTEGER   	85                                      	2    
-_"Prueba.txt LyC Tema 3!"               	-         	"Prueba.txt LyC Tema 3!"                	24   
-_"Ingrese valor actual: "               	-         	"Ingrese valor actual: "                	24   
-_0                                      	INTEGER   	0                                       	1    
-_02.5                                   	FLOAT     	02.5                                    	4    
-_9                                      	INTEGER   	9                                       	1    
-_1                                      	INTEGER   	1                                       	1    
 _max                                    	FLOAT     	max                                     	6    
-_2                                      	INTEGER   	2                                       	1    
+_3                                      	INTEGER   	3                                       	1    
 _aux                                    	FLOAT     	aux                                     	1    
-_4                                      	INTEGER   	4                                       	1    
-_"La suma es: "                         	-         	"La suma es: "                          	14   
-_"no es mayor que 2"                    	-         	"no es mayor que 2"                     	19   
-_"actual  > que 2 y <> de cero"         	-         	"actual  > que 2 y <> de cero"          	30   
+_5                                      	INTEGER   	5                                       	1    

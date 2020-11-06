@@ -13,7 +13,7 @@ los operadores, sean aritmeticos o de asiganión.*/
 
 /* Punteros y pilas para expresiones*/
 /* En las expresiones con paréntesis se complico en poder anidar los tercetos, es por eso que se usaron pilas para los indices.*/
-pila pilaExpr, pilaTerm, pilaFact, pilaBusquedaMaximo, pilaCond, pilaWhile; 
+pila pilaExpr, pilaTerm, pilaFact, pilaBusquedaMaximo, pilaCond, pilaWhile, pilaMaximo; 
 pilaInt pilaTipoComp;
 
 
@@ -209,15 +209,31 @@ asignacion_constante: CONST ID {
 
 lista_expresiones: lista_expresiones COMA expresion 
               {
+                max = desapilar(&pilaMaximo);
+                printf("\n aca1");
+                                  printf("\n\n tengo la dire %p", max);
+
+printf("\n\n %s", max.datoind.punteroSimbolo->lexema);
+                printf("\n aca2");
+
+                char *position_ptr = strchr(max.datoind.punteroSimbolo->lexema, 'x');
+                                printf("\n aca!!!");
+
+                char* numeroObtenido = ++position_ptr;
+
+                char bufferNombre[20] = "aux";
+                strcpy(bufferNombre, numeroObtenido);
+                printf("\n\n el indice es %s", bufferNombre);
+
                 /*Insertamos el resultado que trae expresion en aux_maximo*/
-                aux_maximo = buscarEnTablaDeSimbolos("aux",&tablaDeSimbolos);
+                aux_maximo = buscarEnTablaDeSimbolos(bufferNombre,&tablaDeSimbolos);
                 cargartipoVariable(real,aux_maximo);
                 crearTercetoAsignacion(aux_maximo,indExpr);
                 crearTercetoComparacion(aux_maximo,max);
                 /*Insertamos el resultado que trae expresion en aux_maximo*/
 
                 /*Apilar*/
-                apilar(&pilaBusquedaMaximo,crearTercetoDesplazamiento("NO_ES_MAYOR",0));
+                apilar(&pilaBusquedaMaximo,crearTercetoDesplazamiento("BLE",0));
                 /*Apilar*/ 
 
                 /*Avanzar*/ 
@@ -227,25 +243,33 @@ lista_expresiones: lista_expresiones COMA expresion
                 
                 modificarDesplazamientoTerceto(desapilar(&pilaBusquedaMaximo),obtenerIndiceTercetoSiguente());
 
+                apilar(&pilaMaximo, max);
 
                 printf("\n Regla - lista_expresiones:  lista_expresiones COMA termino \n");
               }
  | expresion 
               {
+                max = desapilar(&pilaMaximo);
+
                 crearTercetoAsignacion(max,indExpr);
                 printf("\n Regla - lista_expresiones: termino \n");
+                apilar(&pilaMaximo, max);
               }
  ;
 
 maximo: MAXIMO  { 
-                  max = buscarEnTablaDeSimbolos("max",&tablaDeSimbolos); 
-                  cargartipoVariable(real,max); 
-                 
+
+                  max = crearTercetoMaximo();
+                  printf("\n\n tengo la dire %p", max);
+                  apilar(&pilaMaximo, max);
+
                 } 
 
                 P_A lista_expresiones P_C  
 
                {
+                  max = desapilar(&pilaMaximo);
+
                   indMaximo = crearTercetoMaximoEncontrado(max);
                   printf("\n Regla - maximo: MAXIMO P_A lista_expresiones P_C \n");
                }
@@ -442,7 +466,7 @@ char* buscarEnTablaDeSimbolosSinTabla(char *yytext)
 {
     indice ind;
     tLista * tablaDeSimbolosCopiaLocal = &tablaDeSimbolos;
-    while(tablaDeSimbolosCopiaLocal )
+    while(*tablaDeSimbolosCopiaLocal )
     {
         if((strcmp(yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema) == 0))
         {
@@ -456,6 +480,34 @@ char* buscarEnTablaDeSimbolosSinTabla(char *yytext)
 
     return SIN_RESULTADOS;
 }
+
+tDato buscarAuxEnTablaDeSimbolosSinTabla()
+{
+    int encontreValor = 0;
+    tDato dato;
+    tLista * tablaDeSimbolosCopiaLocal = &tablaDeSimbolos;
+    while(*tablaDeSimbolosCopiaLocal )
+    {
+printf("\naca %s\n",(*tablaDeSimbolosCopiaLocal)->info.lexema);
+        if(strncmp((*tablaDeSimbolosCopiaLocal)->info.lexema, "_max", strlen("_max")) == 0)
+        {
+          printf("\n dentro del if");
+            dato = (*tablaDeSimbolosCopiaLocal)->info;
+                      printf("\n dato asignado del if");
+      encontreValor = 1;
+        }
+            
+        tablaDeSimbolosCopiaLocal = &(*tablaDeSimbolosCopiaLocal)->sig;
+      }
+
+      if(encontreValor == 0){
+        dato.lexema = (char *) malloc(sizeof(""));
+        strcpy(dato.lexema, "_");
+      }
+printf("\n salgo");
+    return dato;
+}
+
 indice insertarEnTablaDeSimbolos (char *yytext, tLista * tablaDeSimbolos)
 {
     int len = strlen(yytext);
@@ -551,6 +603,7 @@ void inicializarCompilador() {
     inicializarPila(&pilaExpr);
     inicializarPila(&pilaTerm);
     inicializarPila(&pilaFact);
+    inicializarPila(&pilaMaximo);
     inicializarPilaInt(&pilaTipoComp);
 }
 
