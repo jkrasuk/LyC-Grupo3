@@ -308,33 +308,9 @@ int obtenerIndiceTercetoSiguente(){
     return indTercetos;
 }
 indice crearTercetoMaximoEncontrado(indice max){
-return crearTerceto(crearElemStr(max.datoind.punteroSimbolo->lexema), crearElemNull(), crearElemNull(), real, esMaximoEncontrado);
+    return crearTerceto(crearElemStr(max.datoind.punteroSimbolo->lexema), crearElemNull(), crearElemNull(), real, esMaximoEncontrado);
 }
-indice crearTercetoMaximo(){
-    char nombre[20] = "max1";
-printf("\n\n ACA!");
 
-    tDato resultado = buscarAuxEnTablaDeSimbolosSinTabla();
-    printf("\nHE VUELTO");
-
-    printf("\nHE VUELTO 2");
-    // Si encontre algun aux, entonces tengo que agarrar el ultimo y sumarle un numero
-    if(strncmp(resultado.lexema, "_max", strlen("_max")) == 0){
-        printf("\n nop existe");
-        char *position_ptr = strchr(resultado.lexema, 'x');
-        char* numeroObtenido = ++position_ptr;
-        int auxNumber = atoi(numeroObtenido);
-        auxNumber++;
-        char numero[10] = "";
-        itoa(auxNumber, numero, 10);
-        strcpy(nombre, numero);
-    }
-printf("\n ARMO CON EL NOMBRE %s", nombre);
-
-    char buffer[900];
-    sprintf(buffer, "_%s", nombre);
-    return crearTerceto(crearElemStr(nombre), crearElemStr(buffer), crearElemNull(), real, esMaximo);
-}
 indice crearTercetoGetID(const char* val){
     return crearTerceto(crearElemStr("GET"), crearElemStr(val), crearElemNull(), indefinido, esGet);
 }

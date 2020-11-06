@@ -31,6 +31,7 @@ int comparar(char *yytext , tDato *dato );
 void inicializarCompilador();
 void crearTablaDeSimbolos(tLista *pl);
 indice buscarEnTablaDeSimbolos(char *yytext , tLista *tablaDeSimbolos);
+indice buscarOInsertarSinTablaDeSimbolos(char *yytext);
 indice insertarEnTablaDeSimbolos (char *yytext , tLista *tablaDeSimbolos);
 indice crearIndice(int tipoIndice, void * dato_indice);
 void cargartipoVariable(int tipo,indice ind);
@@ -220,12 +221,12 @@ printf("\n\n %s", max.datoind.punteroSimbolo->lexema);
                                 printf("\n aca!!!");
 
                 char* numeroObtenido = ++position_ptr;
-
                 char bufferNombre[20] = "aux";
-                strcpy(bufferNombre, numeroObtenido);
+                strcat(bufferNombre, numeroObtenido);
                 printf("\n\n el indice es %s", bufferNombre);
 
                 /*Insertamos el resultado que trae expresion en aux_maximo*/
+                printf("\n\n %s \n\n", bufferNombre);
                 aux_maximo = buscarEnTablaDeSimbolos(bufferNombre,&tablaDeSimbolos);
                 cargartipoVariable(real,aux_maximo);
                 crearTercetoAsignacion(aux_maximo,indExpr);
@@ -262,7 +263,7 @@ maximo: MAXIMO  {
                   max = crearTercetoMaximo();
                   printf("\n\n tengo la dire %p", max);
                   apilar(&pilaMaximo, max);
-
+imprimirTercetos();
                 } 
 
                 P_A lista_expresiones P_C  
@@ -628,4 +629,41 @@ void generarCodigoIf() {
         modificarDesplazamientoTerceto(indJump1, indTag.datoind.indiceTerceto);
         modificarDesplazamientoTerceto(indJump2, indTag.datoind.indiceTerceto);
     }
+}
+
+indice crearTercetoMaximo(){
+    char nombre[20] = "max";
+printf("\n\n ACA!");
+
+    tDato resultado = buscarAuxEnTablaDeSimbolosSinTabla();
+    printf("\nHE VUELTO");
+
+    printf("\nHE VUELTO 2");
+
+    printf("\n TENGO EL %s", resultado.lexema);
+    // Si encontre algun aux, entonces tengo que agarrar el ultimo y sumarle un numero
+    if(strncmp(resultado.lexema, "_max", strlen("_max")) == 0){
+        printf("\n nop existe");
+        char *position_ptr = strchr(resultado.lexema, 'x');
+        char* numeroObtenido = ++position_ptr;
+        int auxNumber = atoi(numeroObtenido);
+        auxNumber++;
+        char numero[10] = "";
+        itoa(auxNumber, numero, 10);
+
+        printf("\n --  %s -- \n", numero);
+        printf("\n --  %s -- \n", nombre);
+        strcat(nombre, numero);
+                printf("\n --  %s -- \n", nombre);
+
+    }
+printf("\n ARMO CON EL NOMBRE %s", nombre);
+
+
+    aux_maximo = buscarEnTablaDeSimbolos(nombre,&tablaDeSimbolos);
+
+    cargartipoVariable(real,aux_maximo);
+    printf("\n acaaa %s", aux_maximo.datoind.punteroSimbolo->lexema);
+crearTerceto(crearElemStr(nombre), crearElemNull(), crearElemNull(), real, esMaximo);
+    return aux_maximo;
 }
