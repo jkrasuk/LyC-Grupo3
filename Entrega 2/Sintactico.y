@@ -211,22 +211,13 @@ asignacion_constante: CONST ID {
 lista_expresiones: lista_expresiones COMA expresion 
               {
                 max = desapilar(&pilaMaximo);
-                printf("\n aca1");
-                                  printf("\n\n tengo la dire %p", max);
-
-printf("\n\n %s", max.datoind.punteroSimbolo->lexema);
-                printf("\n aca2");
 
                 char *position_ptr = strchr(max.datoind.punteroSimbolo->lexema, 'x');
-                                printf("\n aca!!!");
-
                 char* numeroObtenido = ++position_ptr;
                 char bufferNombre[20] = "aux";
                 strcat(bufferNombre, numeroObtenido);
-                printf("\n\n el indice es %s", bufferNombre);
 
                 /*Insertamos el resultado que trae expresion en aux_maximo*/
-                printf("\n\n %s \n\n", bufferNombre);
                 aux_maximo = buscarEnTablaDeSimbolos(bufferNombre,&tablaDeSimbolos);
                 cargartipoVariable(real,aux_maximo);
                 crearTercetoAsignacion(aux_maximo,indExpr);
@@ -261,9 +252,7 @@ printf("\n\n %s", max.datoind.punteroSimbolo->lexema);
 maximo: MAXIMO  { 
 
                   max = crearTercetoMaximo();
-                  printf("\n\n tengo la dire %p", max);
                   apilar(&pilaMaximo, max);
-imprimirTercetos();
                 } 
 
                 P_A lista_expresiones P_C  
@@ -489,13 +478,10 @@ tDato buscarAuxEnTablaDeSimbolosSinTabla()
     tLista * tablaDeSimbolosCopiaLocal = &tablaDeSimbolos;
     while(*tablaDeSimbolosCopiaLocal )
     {
-printf("\naca %s\n",(*tablaDeSimbolosCopiaLocal)->info.lexema);
         if(strncmp((*tablaDeSimbolosCopiaLocal)->info.lexema, "_max", strlen("_max")) == 0)
         {
-          printf("\n dentro del if");
             dato = (*tablaDeSimbolosCopiaLocal)->info;
-                      printf("\n dato asignado del if");
-      encontreValor = 1;
+            encontreValor = 1;
         }
             
         tablaDeSimbolosCopiaLocal = &(*tablaDeSimbolosCopiaLocal)->sig;
@@ -505,7 +491,7 @@ printf("\naca %s\n",(*tablaDeSimbolosCopiaLocal)->info.lexema);
         dato.lexema = (char *) malloc(sizeof(""));
         strcpy(dato.lexema, "_");
       }
-printf("\n salgo");
+
     return dato;
 }
 
@@ -633,37 +619,23 @@ void generarCodigoIf() {
 
 indice crearTercetoMaximo(){
     char nombre[20] = "max";
-printf("\n\n ACA!");
 
     tDato resultado = buscarAuxEnTablaDeSimbolosSinTabla();
-    printf("\nHE VUELTO");
 
-    printf("\nHE VUELTO 2");
-
-    printf("\n TENGO EL %s", resultado.lexema);
     // Si encontre algun aux, entonces tengo que agarrar el ultimo y sumarle un numero
     if(strncmp(resultado.lexema, "_max", strlen("_max")) == 0){
-        printf("\n nop existe");
         char *position_ptr = strchr(resultado.lexema, 'x');
         char* numeroObtenido = ++position_ptr;
         int auxNumber = atoi(numeroObtenido);
         auxNumber++;
         char numero[10] = "";
         itoa(auxNumber, numero, 10);
-
-        printf("\n --  %s -- \n", numero);
-        printf("\n --  %s -- \n", nombre);
         strcat(nombre, numero);
-                printf("\n --  %s -- \n", nombre);
-
     }
-printf("\n ARMO CON EL NOMBRE %s", nombre);
-
 
     aux_maximo = buscarEnTablaDeSimbolos(nombre,&tablaDeSimbolos);
 
     cargartipoVariable(real,aux_maximo);
-    printf("\n acaaa %s", aux_maximo.datoind.punteroSimbolo->lexema);
-crearTerceto(crearElemStr(nombre), crearElemNull(), crearElemNull(), real, esMaximo);
+
     return aux_maximo;
 }
