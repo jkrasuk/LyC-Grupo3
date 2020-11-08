@@ -31,6 +31,8 @@ int comparar(char *yytext , tDato *dato );
 void inicializarCompilador();
 void crearTablaDeSimbolos(tLista *pl);
 indice buscarEnTablaDeSimbolos(char *yytext , tLista *tablaDeSimbolos);
+void validarExistenciaId(char *yytext, tLista * tablaDeSimbolos);
+void validarDuplicacionId(char *yytext, tLista * tablaDeSimbolos);
 indice insertarEnTablaDeSimbolos (char *yytext , tLista *tablaDeSimbolos);
 indice crearIndice(int tipoIndice, void * dato_indice);
 void cargartipoVariable(int tipo,indice ind);
@@ -118,6 +120,7 @@ bloque_declaracion_variables: DIM MENOR lista_variables MAYOR AS MENOR tipos_var
 
 lista_variables: lista_variables COMA ID  
   {
+    validarDuplicacionId(yytext , &tablaDeSimbolos);
     printf("\n Regla - lista_variables: lista_variables COMA ID \n"); 
     
     auxindice = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);
@@ -127,6 +130,8 @@ lista_variables: lista_variables COMA ID
   }
 |ID 
   {
+    validarDuplicacionId(yytext , &tablaDeSimbolos);
+
     printf("\n Regla - lista_variables: ID \n");
     
     auxindice = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);
@@ -190,7 +195,7 @@ decision: IF P_A condicion P_C L_A bloque L_C
     }
   ;
 
-asignacion: ID ASIG expresion {
+asignacion: ID {validarExistenciaId(yytext , &tablaDeSimbolos);} ASIG expresion {
                                 printf("\n Regla - asignacion: ID ASIG expresion \n"); 
                                 printf("\n lexema en la asignacion %s \n",$1);
                                 crearTercetoAsignacion(buscarEnTablaDeSimbolos($1,&tablaDeSimbolos),indExpr);
@@ -272,7 +277,7 @@ iteracion: WHILE { apilar(&pilaWhile, crearTercetoTag()); }
 																			      }
   ;
 
-put: PUT ID {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPut($2); printf("\n Regla - put: PUT ID \n");}
+put: PUT ID {validarExistenciaId(yytext , &tablaDeSimbolos); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPut($2); printf("\n Regla - put: PUT ID \n");}
   | PUT CTE_INT {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPutInt($2); printf("\n Regla - put: PUT CTE_INT \n");}
   | PUT CTE_REAL {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPutReal($2); printf("\n Regla - put: PUT CTE_REAL \n");}
   | PUT CTE_STRING {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPutString($2); printf("\n Regla - put: PUT CTE_STRING \n");}
@@ -359,6 +364,7 @@ termino:
 
 factor: ID 
           {
+              validarExistenciaId(yytext , &tablaDeSimbolos);
               printf("\n Regla - factor: ID \n"); 
               /* en este caso ya debería estar el ID en la ts no haría falta volver a insertarlo (podriamos sacarlo).*/
               indFact =  buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);  
@@ -579,6 +585,40 @@ void cargarConstanteEntera(indice ind, int tipo_entero){
 }
 void cargarConstante(indice ind, int tipo_constante){
   ind.datoind.punteroSimbolo->tipo="CONST";
+}
+
+void validarExistenciaId(char *yytext, tLista * tablaDeSimbolos)
+{
+    while( *tablaDeSimbolos )
+    {
+        if( (comparar(yytext, &(*tablaDeSimbolos)->info) == 0))
+        {
+            return;
+        }
+        else
+        {
+            tablaDeSimbolos = &(*tablaDeSimbolos)->sig;
+        }
+    }
+
+    printf("\nLa variable %s no fue declarada.\n", yytext);
+    exit(1);
+}
+
+void validarDuplicacionId(char *yytext, tLista * tablaDeSimbolos)
+{
+    while( *tablaDeSimbolos )
+    {
+        if( (comparar(yytext, &(*tablaDeSimbolos)->info) == 0))
+        {
+          printf("\nLa variable %s ya fue declarada.\n", yytext);
+          exit(1);
+        }
+        else
+        {
+            tablaDeSimbolos = &(*tablaDeSimbolos)->sig;
+        }
+    }
 }
 
 void validarVariables() {
