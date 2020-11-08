@@ -404,8 +404,15 @@ void imprimirTablaDeSimbolos(){
     }
 
     while (tablaDeSimbolos) {
+
+    if(strcmp((*tablaDeSimbolos).info.tipo, "-") == 0){
         printf(" %-40s\t%-10s\t%-40s\t%-5d\n", (*tablaDeSimbolos).info.lexema, (*tablaDeSimbolos).info.tipo, (*tablaDeSimbolos).info.valor, (*tablaDeSimbolos).info.longitud);
         fprintf(archivoTablaDeSimbolos, "%-40s\t%-10s\t%-40s\t%-5d\n", (tablaDeSimbolos)->info.lexema, (tablaDeSimbolos)->info.tipo, (tablaDeSimbolos)->info.valor, (*tablaDeSimbolos).info.longitud);
+    } else {
+    printf(" %-40s\t%-10s\t%-40s\t%-5s\n", (*tablaDeSimbolos).info.lexema, (*tablaDeSimbolos).info.tipo, (*tablaDeSimbolos).info.valor, "-");
+        fprintf(archivoTablaDeSimbolos, "%-40s\t%-10s\t%-40s\t%-5s\n", (tablaDeSimbolos)->info.lexema, (tablaDeSimbolos)->info.tipo, (tablaDeSimbolos)->info.valor, "-");
+    }
+        
 
         tablaDeSimbolos = (*tablaDeSimbolos).sig;
     }
