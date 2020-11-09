@@ -4,6 +4,7 @@
 #include <string.h>
 #include <ctype.h> 
 #include "pila_int.h"
+#include "assembler.h"
 #include "tercetos.h"//incluye a tools.h
 #define YYDEBUG 1
 
@@ -108,6 +109,7 @@ programa:
                                             imprimirTablaDeSimbolos();
                                             printf("\n");
                                             imprimirTercetos();
+                                            generaAssembler();
                                           }
   ;
 
