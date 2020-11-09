@@ -1,0 +1,11 @@
+DIM < i1,i2, c > AS < Integer, Integer, Integer >
+i1 = 1;
+i2 = 0;
+
+if(not(a < b)){
+	if(a == b){
+		c = 0;
+	} else {
+	  c = 10;
+	}
+}

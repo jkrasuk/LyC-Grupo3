@@ -1,0 +1,30 @@
+DIM < str1,f1,f2,i1,i2 > AS < String,Float,Float,Integer, Integer >
+
+*- Constante con Nombre -*
+CONST nombre=85;
+PUT "Prueba.txt LyC Tema 3!";
+PUT "Ingrese valor actual: ";
+PUT "Hola!";
+str1 = "Esta es una string de prueba";
+PUT str1;
+
+PUT "Inserte su nombre";
+GET str1;
+PUT "Su nombre es:";
+PUT str1;
+
+PUT "Float de ejemplo:";
+f1 = 1.4;
+PUT f1;
+PUT "Ingrese un float:";
+GET f2;
+PUT "Su float es:";
+PUT f2;
+
+PUT "Int de ejemplo:";
+i1 = 7;
+PUT i1;
+PUT "Ingrese un int:";
+GET i2;
+PUT "Su int es:";
+PUT i2;

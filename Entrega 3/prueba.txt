@@ -1,0 +1,34 @@
+DIM < contador,promedio,actual,suma> AS < Integer,Float,Float,Float >
+
+*- Constante con Nombre -*
+CONST nombre=85;
+PUT "Prueba.txt LyC Tema 3!";
+PUT "Ingrese valor actual: ";
+GET actual;
+contador = 0;
+suma = 02.5+nombre;
+
+while (contador <= 9) {
+	contador = contador + 1;
+	actual = (contador/0.342) + maximo (1*2, suma, 4, maximo(4,actual,nombre));
+	suma = suma + actual;
+};
+
+*- Asi son los comentarios en el 2°Cuat de LyC -*
+
+PUT "La suma es: ";
+PUT suma;
+
+if (actual < nombre){
+	PUT "no es mayor que 2";
+}
+
+if (actual > 2 and actual <> 0){
+	PUT "actual  > que 2 y <> de cero";
+}
+Else
+{
+	if (actual < nombre){
+		PUT "no es mayor que 2";
+	}
+}

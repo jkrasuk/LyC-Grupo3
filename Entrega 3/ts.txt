@@ -1,0 +1,23 @@
+NOMBRE                                  	TIPO DATO 	VALOR                                   	LONGITUD
+_contador                               	INTEGER   	contador                                	-    
+_promedio                               	FLOAT     	promedio                                	-    
+_actual                                 	FLOAT     	actual                                  	-    
+_suma                                   	FLOAT     	suma                                    	-    
+_nombre                                 	CONST     	nombre                                  	-    
+_85                                     	INTEGER   	85                                      	-    
+_"Prueba.txt LyC Tema 3!"               	-         	"Prueba.txt LyC Tema 3!"                	24   
+_"Ingrese valor actual: "               	-         	"Ingrese valor actual: "                	24   
+_0                                      	INTEGER   	0                                       	-    
+_02.5                                   	FLOAT     	02.5                                    	-    
+_9                                      	INTEGER   	9                                       	-    
+_1                                      	INTEGER   	1                                       	-    
+_0.342                                  	FLOAT     	0.342                                   	-    
+_max                                    	FLOAT     	max                                     	-    
+_2                                      	INTEGER   	2                                       	-    
+_aux                                    	FLOAT     	aux                                     	-    
+_4                                      	INTEGER   	4                                       	-    
+_max1                                   	FLOAT     	max1                                    	-    
+_aux1                                   	FLOAT     	aux1                                    	-    
+_"La suma es: "                         	-         	"La suma es: "                          	14   
+_"no es mayor que 2"                    	-         	"no es mayor que 2"                     	19   
+_"actual  > que 2 y <> de cero"         	-         	"actual  > que 2 y <> de cero"          	30   

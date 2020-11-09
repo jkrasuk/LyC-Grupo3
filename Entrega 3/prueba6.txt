@@ -1,0 +1,16 @@
+DIM < a,b, c > AS < Integer, Integer, Integer >
+a = 1
+b = 0
+
+IF (a == b OR a == c){
+    c = 1.2
+}
+
+IF (c > a AND c < b){
+	
+   c = 222
+        IF (c == a AND c == b){
+            c = 333
+            IF (c == b){
+                c = 444
+}}}
