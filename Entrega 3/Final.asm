@@ -6,6 +6,8 @@ include number.asm
 .386
 .STACK 200h
 
+.DATA
+
 .CODE
 
 MAIN:

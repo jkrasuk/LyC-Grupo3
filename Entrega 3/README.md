@@ -1,4 +1,4 @@
-# Segunda entrega
+# Tercera entrega
 
 OBJETIVO:  Realizar un compilador utilizando el archivo generado en la segunda entrega. El programa ejecutable deberá procesar el archivo de entrada (prueba.txt), compilarlo y ejecutarlo.
 
