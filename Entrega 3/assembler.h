@@ -6,6 +6,7 @@
 void generaAssembler();
 void generaHeader(FILE*);
 void generaCuerpo(FILE*);
+void generaTablaDeSimbolos(FILE*);
 
 void generaAssembler() {
     FILE *f;
@@ -16,6 +17,7 @@ void generaAssembler() {
     }
 
     generaHeader(f);
+    generaTablaDeSimbolos(f);
     generaCuerpo(f);
     
     if (fclose(f) != 0) {
@@ -34,6 +36,12 @@ void generaHeader(FILE* f) {
     fprintf(f, ".386\n");
     fprintf(f, ".STACK 200h\n");
     fprintf(f, "\n");
+}
+
+void generaTablaDeSimbolos(FILE* f) {
+    fprintf(f, ".DATA\n\n");
+
+    // Recorrer la tabla de simbolos
 }
 
 void generaCuerpo(FILE* f) {
