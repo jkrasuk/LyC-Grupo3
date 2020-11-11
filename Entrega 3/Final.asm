@@ -8,6 +8,28 @@ include number.asm
 
 .DATA
 
+contador dd ?
+promedio dd ?
+actual dd ?
+suma dd ?
+
+
+
+
+
+
+
+
+
+max dd ?
+
+aux dd ?
+
+max1 dd ?
+aux1 dd ?
+
+
+
 .CODE
 
 MAIN:

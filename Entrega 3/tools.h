@@ -6,7 +6,7 @@
 #define SIN_RESULTADOS "NO_OK"
 extern int yylineno;
 /*  Son los nombres de cada tipo */
-const char* nombreTiposVal[5] = {"indefinido", "string", "entero", "real", "constante" };
+const char* nombreTiposVal[8] = {"indefinido", "string", "entero", "real", "constante", "cteEntero", "cteReal", "cteString"};
 
 typedef struct
 {
@@ -45,7 +45,10 @@ typedef enum tipoValor {
     string,		 //1
     entero,		 //2	
     real,		 //3
-    constante,	
+    constante,		 //4
+    cteEntero,		 //5
+    cteReal,		 //6
+    cteString			 //7
 } tipoValor;
 
 typedef struct Datoindice {
@@ -101,4 +104,3 @@ indice desapilar(pila* p) {
 
   return val;
 }
-

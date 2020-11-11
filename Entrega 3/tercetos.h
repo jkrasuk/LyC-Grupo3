@@ -160,15 +160,28 @@ indice crearTercetoOperacion(const char* op, indice ind1, indice ind2) {
             tipo2 = string;
         } else if(strcmp(resultado, "FLOAT") == 0){
             tipo2 = real;
+        } else if(strcmp(resultado, "CTE_FLOAT") == 0){
+            tipo2 = cteReal;
+        } else if(strcmp(resultado, "CTE_INTEGER") == 0){
+            tipo2 = cteEntero;
+        } else if(strcmp(resultado, "CTE_STRING") == 0){
+            tipo2 = cteString;
         } else{
             tipo2 = indefinido;
         }   
     }
 
     /* Validamos que los tipos de la expresión sean compatibles (esto hay que definirlo entre todos por ahora yo tome este criterio de validación)*/
-    if (tipo1 == tipo2) {
+    if (tipo1 == tipo2 ||
+        (tipo1 == string && tipo2 == cteString) ||
+        (tipo1 == entero && tipo2 == cteEntero) ||
+        (tipo1 == real && tipo2 == cteReal)) {
         tipoResultado = tipo1;
-    } else if ((tipo1 == real && tipo2 == entero) || (tipo1 == entero && tipo2 == real)) { 
+    } else if (
+        ((tipo1 == real && tipo2 == cteEntero) || (tipo1 == real && tipo2 == entero)) ||
+        ((tipo1 == entero && tipo2 == real) || (tipo1 == entero && tipo2 == cteReal) ) ||
+         (tipo1 == cteEntero && tipo2 == cteReal || tipo1 == cteReal && tipo2 == cteEntero)
+        ) { 
         tipoResultado = real;
     } else {
         printf("\nError Error en la linea %d: La operacion %s con esos tipos de datos no es compatible.", 
@@ -230,15 +243,26 @@ indice crearTercetoAsignacion(indice ind1, indice ind2) {
             tipo2 = string;
         } else if(strcmp(resultado, "FLOAT") == 0){
             tipo2 = real;
+        } else if(strcmp(resultado, "CTE_FLOAT") == 0){
+        tipo2 = cteReal;
+        } else if(strcmp(resultado, "CTE_INTEGER") == 0){
+            tipo2 = cteEntero;
+        } else if(strcmp(resultado, "CTE_STRING") == 0){
+            tipo2 = cteString;
         } else{
             tipo2 = indefinido;
-        }   
+        }
     }
 
     /*  La razón por la cuál se necesitó hacer una función aparte solo para las
         asignaciones es porque la validación de tipo es diferente a la que se hace 
         en crearTercetoOperación. */
-    if (tipo1 == tipo2 || (tipo1 == real && tipo2 == entero) || (tipo1 == constante && (tipo2 == real || tipo2 == entero))) { 
+    if (tipo1 == tipo2 ||
+        (tipo1 == string && tipo2 == cteString) ||
+        (tipo1 == entero && tipo2 == cteEntero) ||
+        (tipo1 == real && tipo2 == cteReal) ||
+        ((tipo1 == real && tipo2 == cteEntero) || (tipo1 == cteReal && tipo2 == entero) || (tipo1 == real && tipo2 == entero)) || 
+        (tipo1 == constante && (tipo2 == cteReal || tipo2 == cteEntero))) { 
         return crearTerceto(crearElemStr("="), elem1, elem2, tipo1, esAsignacion);
     } else {
         printf("\nError en la linea %d: Se intento asignar un %s a una variable de tipo %s.", 
@@ -279,15 +303,28 @@ indice crearTercetoComparacion(indice ind1, indice ind2) {
             tipo2 = string;
         } else if(strcmp(resultado, "FLOAT") == 0){
             tipo2 = real;
+        } else if(strcmp(resultado, "CTE_FLOAT") == 0){
+        tipo2 = cteReal;
+        } else if(strcmp(resultado, "CTE_INTEGER") == 0){
+            tipo2 = cteEntero;
+        } else if(strcmp(resultado, "CTE_STRING") == 0){
+            tipo2 = cteString;
         } else{
             tipo2 = indefinido;
-        }   
+        } 
     }
 
     /* Validamos que los tipos de la comparación sean compatibles */
-    if (tipo1 == tipo2) {
+    if (tipo1 == tipo2 ||
+        (tipo1 == string && tipo2 == cteString) ||
+        (tipo1 == entero && tipo2 == cteEntero) ||
+        (tipo1 == real && tipo2 == cteReal)) {
         tipoResultado = tipo1;
-    } else if ((tipo1 == real && tipo2 == entero) || (tipo1 == entero && tipo2 == real)) {
+    } else if (
+        ((tipo1 == real && tipo2 == cteEntero) || (tipo1 == real && tipo2 == entero)) ||
+         ((tipo1 == entero && tipo2 == real) || (tipo1 == entero && tipo2 == cteReal) ) ||
+         (tipo1 == cteEntero && tipo2 == cteReal || tipo1 == cteReal && tipo2 == cteEntero)
+        ) { 
         tipoResultado = real;
     } else {
         printf("\nError Error en la linea %d: La comparacion entre %s y %s no es compatible.", 
@@ -461,5 +498,14 @@ tipoValor obtenerTipoSimbolo(char * tipo){
         }
         if(strcmp(tipo, "CONST")==0){
            return constante; 
+        }
+        if(strcmp(tipo, "CTE_STRING")==0){
+           return cteString; 
+        }
+        if(strcmp(tipo, "CTE_INTEGER")==0){
+           return cteEntero; 
+        }
+        if(strcmp(tipo, "CTE_FLOAT")==0){
+           return cteReal; 
         }
 }

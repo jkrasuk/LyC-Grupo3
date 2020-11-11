@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <string.h>
+#include "tercetos.h"//incluye a tools.h
 
-void generaAssembler();
+void generaAssembler(tLista * tablaDeSimbolos);
 void generaHeader(FILE*);
 void generaCuerpo(FILE*);
-void generaTablaDeSimbolos(FILE*);
+void generaTablaDeSimbolos(FILE*, tLista * tablaDeSimbolos);
 
-void generaAssembler() {
+void generaAssembler(tLista * tablaDeSimbolos) {
     FILE *f;
 
     if ((f = fopen("Final.asm", "w")) == NULL) {
@@ -17,7 +18,7 @@ void generaAssembler() {
     }
 
     generaHeader(f);
-    generaTablaDeSimbolos(f);
+    generaTablaDeSimbolos(f, tablaDeSimbolos);
     generaCuerpo(f);
     
     if (fclose(f) != 0) {
@@ -38,10 +39,34 @@ void generaHeader(FILE* f) {
     fprintf(f, "\n");
 }
 
-void generaTablaDeSimbolos(FILE* f) {
+void generaTablaDeSimbolos(FILE* f, tLista * tablaDeSimbolos) {
     fprintf(f, ".DATA\n\n");
-
+    printf("INICIO\n");
+    while(*tablaDeSimbolos )
+    {
     // Recorrer la tabla de simbolos
+        float val;
+        printf("\n\n %s ", (*tablaDeSimbolos)->info.lexema);
+        switch(obtenerTipoSimbolo((*tablaDeSimbolos)->info.tipo)) {
+            case string:
+                fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
+                fprintf(f, "db %d dup (?), \"$\"", 30);
+                break;
+            case entero:
+                fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
+                fprintf(f, "dd ?");
+                break;
+            case real:
+                fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
+                fprintf(f, "dd ?");
+                break;
+                default: break;
+        }
+        fprintf(f, "\n");
+        tablaDeSimbolos = &(*tablaDeSimbolos)->sig;
+    }
+
+    printf("TERMINE\n");
 }
 
 void generaCuerpo(FILE* f) {

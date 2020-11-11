@@ -5,7 +5,6 @@
 #include <ctype.h> 
 #include "pila_int.h"
 #include "assembler.h"
-#include "tercetos.h"//incluye a tools.h
 #define YYDEBUG 1
 
 /*NOTA: No se crean tercetos por cada vez que identifica un ID o CTE. ej: (_1,_,_) ó (b,_,_). Directamente se crean los tercetos con 
@@ -19,7 +18,7 @@ pilaInt pilaTipoComp;
 
 
 
-indice indExpr,indTerm, indFact, indComp, indMaximo, indTipoComp; //Punteros a la tabla de simbolos o al array globar de tercetos.
+indice indExpr,indTerm, indFact, indComp, indMaximo, indTipoComp, indPut; //Punteros a la tabla de simbolos o al array globar de tercetos.
 
 indice aux_maximo,max, indExprAux; //variables para la semantica del maximo.
 
@@ -40,6 +39,9 @@ void cargartipoVariable(int tipo,indice ind);
 void cargarConstanteReal  (indice ind,int tipo_real);
 void cargarConstanteEntera(indice ind,int tipo_entero);
 void cargarConstanteString(indice ind,int tipo_string);
+void cargarConstanteCteReal  (indice ind,int tipo_real);
+void cargarConstanteCteEntera(indice ind,int tipo_entero);
+void cargarConstanteCteString(indice ind,int tipo_string);
 void cargarConstante(indice ind, int tipo_constante);
 void generarCodigoIf();
 void imprimirTablaDeSimbolos();
@@ -106,10 +108,10 @@ programa:
           sentencia_declaracion algoritmo {
                                             printf("\n Regla - programa: sentencia_declaracion algoritmo \n");
                                             printf("\n COMPILACION EXITOSA \n");
-                                            imprimirTablaDeSimbolos();
+                                            generaAssembler(&tablaDeSimbolos);
+                                           imprimirTablaDeSimbolos();
                                             printf("\n");
                                             imprimirTercetos();
-                                            generaAssembler();
                                           }
   ;
 
@@ -280,9 +282,9 @@ iteracion: WHILE { apilar(&pilaWhile, crearTercetoTag()); }
   ;
 
 put: PUT ID {validarExistenciaId(yytext , &tablaDeSimbolos); buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPut($2); printf("\n Regla - put: PUT ID \n");}
-  | PUT CTE_INT {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPutInt($2); printf("\n Regla - put: PUT CTE_INT \n");}
-  | PUT CTE_REAL {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPutReal($2); printf("\n Regla - put: PUT CTE_REAL \n");}
-  | PUT CTE_STRING {buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); crearTercetoPutString($2); printf("\n Regla - put: PUT CTE_STRING \n");}
+  | PUT CTE_INT {indPut = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);  cargarConstanteCteEntera(indPut,cteEntero); crearTercetoPutInt($2); printf("\n Regla - put: PUT CTE_INT \n");}
+  | PUT CTE_REAL {indPut = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);  cargarConstanteCteReal(indPut,cteReal); crearTercetoPutReal($2); printf("\n Regla - put: PUT CTE_REAL \n");}
+  | PUT CTE_STRING {indPut = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos);  cargarConstanteCteString(indPut,cteString); crearTercetoPutString($2); printf("\n Regla - put: PUT CTE_STRING \n");}
   ;
    
 get: GET ID { crearTercetoGetID($2); printf("\n Regla - get: GET ID \n"); }
@@ -374,9 +376,9 @@ factor: ID
 
 
 
-  | CTE_INT { printf("\n Regla - factor: CTE_INT \n");      indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); cargarConstanteEntera(indFact,entero);} 
-  | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n");    indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); cargarConstanteReal(indFact,real);}
-  | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n"); indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); cargarConstanteString(indFact,string);}
+  | CTE_INT { printf("\n Regla - factor: CTE_INT \n");      indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); cargarConstanteCteEntera(indFact,cteEntero);} 
+  | CTE_REAL { printf("\n Regla - factor: CTE_REAL \n");    indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); cargarConstanteCteReal(indFact,cteReal);}
+  | CTE_STRING {printf("\n Regla - factor: CTE_STRING \n"); indFact = buscarEnTablaDeSimbolos(yytext , &tablaDeSimbolos); cargarConstanteCteString(indFact,cteString);}
   | P_A expresion P_C {printf("\n Regla - factor: P_A expresion P_C \n"); indFact = indExpr;}
   | maximo {printf("\n Regla - factor: maximo \n");         indFact = indMaximo;}
   ;
@@ -413,7 +415,10 @@ void imprimirTablaDeSimbolos(){
 
     while (tablaDeSimbolos) {
 
-    if(strcmp((*tablaDeSimbolos).info.tipo, "-") == 0){
+
+    if(strcmp((*tablaDeSimbolos).info.tipo, "CTE_INTEGER") == 0 ||
+          strcmp((*tablaDeSimbolos).info.tipo, "CTE_STRING") == 0 ||
+          strcmp((*tablaDeSimbolos).info.tipo, "CTE_FLOAT") == 0){
         printf(" %-40s\t%-10s\t%-40s\t%-5d\n", (*tablaDeSimbolos).info.lexema, (*tablaDeSimbolos).info.tipo, (*tablaDeSimbolos).info.valor, (*tablaDeSimbolos).info.longitud);
         fprintf(archivoTablaDeSimbolos, "%-40s\t%-10s\t%-40s\t%-5d\n", (tablaDeSimbolos)->info.lexema, (tablaDeSimbolos)->info.tipo, (tablaDeSimbolos)->info.valor, (*tablaDeSimbolos).info.longitud);
     } else {
@@ -570,10 +575,20 @@ void cargartipoVariable(int tipo,indice ind){
         case constante:
             tipoT = "CONST";
             break;
+        case cteEntero:
+            tipoT = "CTE_INTEGER";
+            break;
+        case cteReal:
+            tipoT = "CTE_FLOAT";
+            break;
+        case cteString:
+            tipoT = "CTE_STRING";
+            break;
         default:
             tipoT = "indefinido";
             break;
     }
+
     ind.datoind.punteroSimbolo->tipo=tipoT;
 }
 void cargarConstanteReal(indice ind, int tipo_real){
@@ -584,6 +599,15 @@ void cargarConstanteString(indice ind, int tipo_string){
 }
 void cargarConstanteEntera(indice ind, int tipo_entero){
   ind.datoind.punteroSimbolo->tipo="INTEGER";
+}
+void cargarConstanteCteReal(indice ind, int tipo_real){
+  ind.datoind.punteroSimbolo->tipo="CTE_FLOAT";
+}
+void cargarConstanteCteString(indice ind, int tipo_string){
+  ind.datoind.punteroSimbolo->tipo="CTE_STRING";
+}
+void cargarConstanteCteEntera(indice ind, int tipo_entero){
+  ind.datoind.punteroSimbolo->tipo="CTE_INTEGER";
 }
 void cargarConstante(indice ind, int tipo_constante){
   ind.datoind.punteroSimbolo->tipo="CONST";

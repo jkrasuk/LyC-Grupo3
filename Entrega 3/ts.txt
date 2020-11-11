@@ -4,20 +4,20 @@ _promedio                               	FLOAT     	promedio                    
 _actual                                 	FLOAT     	actual                                  	-    
 _suma                                   	FLOAT     	suma                                    	-    
 _nombre                                 	CONST     	nombre                                  	-    
-_85                                     	INTEGER   	85                                      	-    
-_"Prueba.txt LyC Tema 3!"               	-         	"Prueba.txt LyC Tema 3!"                	24   
-_"Ingrese valor actual: "               	-         	"Ingrese valor actual: "                	24   
-_0                                      	INTEGER   	0                                       	-    
-_02.5                                   	FLOAT     	02.5                                    	-    
-_9                                      	INTEGER   	9                                       	-    
-_1                                      	INTEGER   	1                                       	-    
-_0.342                                  	FLOAT     	0.342                                   	-    
+_85                                     	CTE_INTEGER	85                                      	2    
+_"Prueba.txt LyC Tema 3!"               	CTE_STRING	"Prueba.txt LyC Tema 3!"                	24   
+_"Ingrese valor actual: "               	CTE_STRING	"Ingrese valor actual: "                	24   
+_0                                      	CTE_INTEGER	0                                       	1    
+_02.5                                   	CTE_FLOAT 	02.5                                    	4    
+_9                                      	CTE_INTEGER	9                                       	1    
+_1                                      	CTE_INTEGER	1                                       	1    
+_0.342                                  	CTE_FLOAT 	0.342                                   	5    
 _max                                    	FLOAT     	max                                     	-    
-_2                                      	INTEGER   	2                                       	-    
+_2                                      	CTE_INTEGER	2                                       	1    
 _aux                                    	FLOAT     	aux                                     	-    
-_4                                      	INTEGER   	4                                       	-    
+_4                                      	CTE_INTEGER	4                                       	1    
 _max1                                   	FLOAT     	max1                                    	-    
 _aux1                                   	FLOAT     	aux1                                    	-    
-_"La suma es: "                         	-         	"La suma es: "                          	14   
-_"no es mayor que 2"                    	-         	"no es mayor que 2"                     	19   
-_"actual  > que 2 y <> de cero"         	-         	"actual  > que 2 y <> de cero"          	30   
+_"La suma es: "                         	CTE_STRING	"La suma es: "                          	14   
+_"no es mayor que 2"                    	CTE_STRING	"no es mayor que 2"                     	19   
+_"actual  > que 2 y <> de cero"         	CTE_STRING	"actual  > que 2 y <> de cero"          	30   
