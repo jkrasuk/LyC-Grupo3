@@ -165,10 +165,11 @@ INT 21h
 
 .DATA
 
-contador dd ?
-promedio dd ?
-actual dd ?
-suma dd ?
+_contador dd ?
+_promedio dd ?
+_actual dd ?
+_suma dd ?
+_nombre dd ?
 @int5 dd 85.000000
 @str6 db "Prueba.txt LyC Tema 3!", "$", 30 dup (?)
 @str7 db "Ingrese valor actual: ", "$", 30 dup (?)
@@ -177,12 +178,12 @@ suma dd ?
 @int10 dd 9.000000
 @int11 dd 1.000000
 @flt12 dd 0.342000
-max dd ?
+_max dd ?
 @int14 dd 2.000000
-aux dd ?
+_aux dd ?
 @int16 dd 4.000000
-max1 dd ?
-aux1 dd ?
+_max1 dd ?
+_aux1 dd ?
 @str19 db "La suma es: ", "$", 30 dup (?)
 @str20 db "no es mayor que 2", "$", 30 dup (?)
 @str21 db "actual  > que 2 y <> de cero", "$", 30 dup (?)

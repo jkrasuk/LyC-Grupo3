@@ -50,50 +50,74 @@ void generaTablaDeSimbolos(FILE *f, tLista *tablaDeSimbolos)
 {
     int i = 0;
     char resultado[20] = "";
+    char *token;
+    const char s[2] = "@";
+
     fprintf(f, ".DATA\n\n");
 
     while (*tablaDeSimbolos)
     {
         float val;
+        token = strstr((*tablaDeSimbolos)->info.valor, s);
         switch (obtenerTipoSimbolo((*tablaDeSimbolos)->info.tipo))
         {
         case string:
-            fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
+            if (token != NULL)
+            {
+                fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
+            }
+            else
+            {
+                fprintf(f, "_%s ", (*tablaDeSimbolos)->info.valor);
+            }
+
             fprintf(f, "db %d dup (?), \"$\"", LIMITE_STRINGS);
             fprintf(f, "\n");
             break;
         case entero:
-            fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
+            if (token != NULL)
+            {
+                fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
+            }
+            else
+            {
+                fprintf(f, "_%s ", (*tablaDeSimbolos)->info.valor);
+            }
             fprintf(f, "dd ?");
             fprintf(f, "\n");
             break;
         case real:
-            fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
+            if (token != NULL)
+            {
+                fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
+            }
+            else
+            {
+                fprintf(f, "_%s ", (*tablaDeSimbolos)->info.valor);
+            }
             fprintf(f, "dd ?");
             fprintf(f, "\n");
             break;
-        /*case constante:
-            fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
+        case constante:
+            fprintf(f, "_%s ", (*tablaDeSimbolos)->info.valor);
 
             // Recupero el tipo de la constante
             strcpy(resultado, buscarTipoEnTablaDeSimbolosSinTabla(obtenerValorTerceto((*tablaDeSimbolos)->info.lexema)));
 
             if (strcmp(resultado, "CTE_FLOAT") == 0)
             {
-                val = atof((*tablaDeSimbolos)->info.valor);
-                fprintf(f, "dd %f", val);
+                fprintf(f, "dd ?");
             }
             else if (strcmp(resultado, "CTE_INTEGER") == 0)
             {
-                val = atof((*tablaDeSimbolos)->info.valor);
-                fprintf(f, "dd %f", val);
+                fprintf(f, "dd ?");
             }
             else if (strcmp(resultado, "CTE_STRING") == 0)
             {
-                fprintf(f, "db \"%s\", \"$\", %d dup (?)", (*tablaDeSimbolos)->info.valor, LIMITE_STRINGS);
+                fprintf(f, "db %d dup (?), \"$\"", LIMITE_STRINGS);
             }
-
-            break;*/
+            fprintf(f, "\n");
+            break;
         case cteEntero:
             fprintf(f, "@int%d ", i);
             val = atof((*tablaDeSimbolos)->info.valor);
