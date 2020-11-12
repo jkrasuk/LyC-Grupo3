@@ -141,7 +141,7 @@ void generaCuerpo(FILE* f) {
                 salto = terceto.elementos[0].valor.cad;
                 indEtiqueta = terceto.elementos[1].valor.ind;
                 etiqueta = tercetos[indEtiqueta].elementos[0].valor.cad;
-                fprintf(f, "\t%s %s", salto, etiqueta);
+                fprintf(f, "\tTERCETO %d %s %s", i+1, salto, etiqueta);
 		    	break;
 		    case esMaximoEncontrado:
 		    	break;
