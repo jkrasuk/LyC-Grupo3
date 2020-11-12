@@ -240,8 +240,7 @@ lista_expresiones: lista_expresiones COMA expresion
                 crearTercetoAsignacion(max,aux_maximo);
                 /*Avanzar*/
 
-                
-                modificarDesplazamientoTerceto(desapilar(&pilaBusquedaMaximo),obtenerIndiceTercetoSiguente());
+                modificarDesplazamientoTerceto(desapilar(&pilaBusquedaMaximo),crearTercetoTag().datoind.indiceTerceto);
 
                 apilar(&pilaMaximo, max);
 
@@ -471,7 +470,7 @@ indice buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
   return insertarEnTablaDeSimbolos(yytext, tablaDeSimbolos);
 }
 
-char* buscarEnTablaDeSimbolosSinTabla(char *yytext)
+char* buscarTipoEnTablaDeSimbolosSinTabla(char *yytext)
 {
     indice ind;
     tLista * tablaDeSimbolosCopiaLocal = &tablaDeSimbolos;
@@ -488,6 +487,29 @@ char* buscarEnTablaDeSimbolosSinTabla(char *yytext)
     }
 
     return SIN_RESULTADOS;
+}
+
+int buscarIndiceSimboloEnTablaDeSimbolosSinTabla(char *yytext)
+{
+    int i = 0;
+    indice ind;
+    tLista * tablaDeSimbolosCopiaLocal = &tablaDeSimbolos;
+    while(*tablaDeSimbolosCopiaLocal )
+    {
+        printf("\n\n %d COMPARO %s con %s", i, yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema);
+
+        if((strcmp(yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema) == 0))
+        {
+            return i;
+        }
+        else
+        {
+            tablaDeSimbolosCopiaLocal = &(*tablaDeSimbolosCopiaLocal)->sig;
+        }
+        i++;
+    }
+
+    return -1;
 }
 
 tDato buscarAuxEnTablaDeSimbolosSinTabla()

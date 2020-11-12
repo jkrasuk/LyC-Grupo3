@@ -6,15 +6,15 @@
 #define SIN_RESULTADOS "NO_OK"
 extern int yylineno;
 /*  Son los nombres de cada tipo */
-const char* nombreTiposVal[8] = {"indefinido", "string", "entero", "real", "constante", "cteEntero", "cteReal", "cteString"};
+const char *nombreTiposVal[8] = {"indefinido", "string", "entero", "real", "constante", "cteEntero", "cteReal", "cteString"};
 
 typedef struct
 {
   char *lexema;
-  char *tipo; 
+  char *tipo;
   char *valor;
   int longitud;
-}tInfo;
+} tInfo;
 
 typedef tInfo tDato;
 
@@ -22,68 +22,72 @@ typedef struct sNodo
 {
   tDato info;
   struct sNodo *sig;
-}tNodo;
+} tNodo;
 
 typedef tNodo *tLista;
 
 /*  Estas estructuras son para optimizar la generación de tercetos.
     Un índice puede apuntar a la lista de tercetos o a la lista
     de símbolos según sea su tipo. */
-typedef enum tipoIndice {
-    esSimbolo,
-    esTerceto,
-    noEsNuevo
+typedef enum tipoIndice
+{
+  esSimbolo,
+  esTerceto,
+  noEsNuevo
 } tipoIndice;
-
 
 /*  Para que sea mas facil de identificar los tipos de las variables que maneja 
     nuestro compilador. 
     NOTA: El indefinido no es un tipo "válido", nada más es para asignarle a los
     tercetos donde no importa realmente de que tipo son. */
-typedef enum tipoValor {
-    indefinido,  //0
-    string,		 //1
-    entero,		 //2	
-    real,		 //3
-    constante,		 //4
-    cteEntero,		 //5
-    cteReal,		 //6
-    cteString			 //7
+typedef enum tipoValor
+{
+  indefinido, //0
+  string,     //1
+  entero,     //2
+  real,       //3
+  constante,  //4
+  cteEntero,  //5
+  cteReal,    //6
+  cteString   //7
 } tipoValor;
 
-typedef struct Datoindice {
-  tDato * punteroSimbolo;
+typedef struct Datoindice
+{
+  tDato *punteroSimbolo;
   int indiceTerceto;
 } Datoindice;
 
 /*Esta estructura se puede obviar pero queda mas legible si manejamos todos los indices de los 
 tercetos con una estructura. */
 
-typedef struct indice {
-    Datoindice datoind;
-     tipoIndice tipo;
+typedef struct indice
+{
+  Datoindice datoind;
+  tipoIndice tipo;
 } indice;
 
-
 /* Pila para almacenar indices de los tercetos. */
-typedef struct nodoPila {
+typedef struct nodoPila
+{
   indice dato;
-  struct nodoPila* sig;
+  struct nodoPila *sig;
 } nodoPila;
 
-typedef nodoPila* pila;
+typedef nodoPila *pila;
 
-void inicializarPila(pila* p);
-void apilar(pila* p, indice val);
-indice desapilar(pila* p);
+void inicializarPila(pila *p);
+void apilar(pila *p, indice val);
+indice desapilar(pila *p);
 
-void inicializarPila(pila* p) {
+void inicializarPila(pila *p)
+{
   *p = NULL;
 }
 
-
-void apilar(pila* p, indice val) {
-  nodoPila* nodo = (nodoPila*)malloc(sizeof(nodoPila));
+void apilar(pila *p, indice val)
+{
+  nodoPila *nodo = (nodoPila *)malloc(sizeof(nodoPila));
 
   nodo->dato = val;
   nodo->sig = ((*p) == NULL ? NULL : (*p));
@@ -91,14 +95,16 @@ void apilar(pila* p, indice val) {
   *p = nodo;
 }
 
-indice desapilar(pila* p) {
-  if(*p == NULL) {
+indice desapilar(pila *p)
+{
+  if (*p == NULL)
+  {
     printf("ERROR: Intento de desapilar una pila que estaba vacia.\n");
     exit(1);
   }
 
   indice val = (*p)->dato;
-  nodoPila* aux = *p;
+  nodoPila *aux = *p;
   *p = (*p)->sig;
   free(aux);
 

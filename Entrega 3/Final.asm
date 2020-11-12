@@ -15,72 +15,100 @@ MOV EAX, @DATA
 MOV DS, EAX
 MOV ES, EAX
 
+	FLD _85 
+	FSTP _nombre
 
 
 
+	FLD _0 
+	FSTP _contador
 
-
-
-
+	FLD  
+	FSTP _suma
 
 TAG8:
 
-	TERCETO 10 JNBE TAG44
+	JNBE TAG49
+
+	FLD  
+	FSTP _contador
+
+
+	FLD _^‹å]Â 
+	FSTP _max
+	FLD _suma 
+	FSTP _aux
+
+	JNA TAG20
+	FLD _aux 
+	FSTP _max
+
+TAG20:
+	FLD _4 
+	FSTP _aux
+
+	JNA TAG25
+	FLD _aux 
+	FSTP _max
+
+TAG25:
+	FLD _4 
+	FSTP _max1
+	FLD _actual 
+	FSTP _aux1
+
+	JNA TAG31
+	FLD _aux1 
+	FSTP _max1
+
+TAG31:
+	FLD _nombre 
+	FSTP _aux1
+
+	JNA TAG36
+	FLD _aux1 
+	FSTP _max1
+
+TAG36:
+
+	FLD _^‹å]Â 
+	FSTP _aux
+
+	JNA TAG42
+	FLD _aux 
+	FSTP _max
+
+TAG42:
+
+
+	FLD  
+	FSTP _actual
+
+	FLD  
+	FSTP _suma
+	JMP TAG8
+
+TAG49:
 
 
 
+	JNB TAG55
 
 
+TAG55:
+
+	JNA TAG62
+
+	JE TAG62
+
+	JMP TAG66
+
+TAG62:
+
+	JNB TAG66
 
 
-	TERCETO 18 JNA =
-
-
-
-	TERCETO 22 JNA =
-
-
-
-
-	TERCETO 27 JNA =
-
-
-
-	TERCETO 31 JNA _max1
-
-
-
-
-	TERCETO 36 JNA _max
-
-
-
-
-
-
-	TERCETO 43 JMP TAG8
-
-TAG44:
-
-
-
-	TERCETO 48 JNB TAG50
-
-
-TAG50:
-
-	TERCETO 52 JNA TAG57
-
-	TERCETO 54 JE TAG57
-
-	TERCETO 56 JMP TAG61
-
-TAG57:
-
-	TERCETO 59 JNB TAG61
-
-
-TAG61:
+TAG66:
 
 
 MOV EAX, 4C00h
