@@ -224,34 +224,38 @@ void generaCuerpo(FILE *f, tLista *tablaDeSimbolos)
 char *resolverElemento(elemento e)
 {
     char buffer[100];
-    printf("\n el tipo es %d", e.tipo);
 
     char tipoSimbolo[30] = "";
     strcpy(tipoSimbolo, buscarTipoEnTablaDeSimbolosSinTabla(e.valor.cad));
     int indiceSimbolo = buscarIndiceSimboloEnTablaDeSimbolosSinTabla(e.valor.cad);
 
-    if (e.tipo == string || e.tipo == entero || e.tipo == real)
+    if (e.tipo == entero)
     {
-        printf("\n\n %s \n\n", e.valor.cad);
-        sprintf(buffer, "%s", e.valor.cad);
+        sprintf(buffer, "@aux%d", e.valor.ind + 1);
     }
-    else if (e.tipo == cteString)
+    else if (e.tipo == string)
     {
-        sprintf(buffer, "@str%d", indiceSimbolo);
+        if (strcmp(tipoSimbolo, "STRING") == 0 || strcmp(tipoSimbolo, "INTEGER") == 0 || strcmp(tipoSimbolo, "FLOAT") == 0|| strcmp(tipoSimbolo, "CONST") == 0)
+        {
+            sprintf(buffer, "%s", e.valor.cad);
+        }
+        else if (strcmp(tipoSimbolo, "CTE_STRING") == 0)
+        {
+            sprintf(buffer, "@str%d", indiceSimbolo);
+        }
+        else if (strcmp(tipoSimbolo, "CTE_INTEGER") == 0)
+        {
+            sprintf(buffer, "@int%d", indiceSimbolo);
+        }
+        else if (strcmp(tipoSimbolo, "CTE_FLOAT") == 0)
+        {
+            sprintf(buffer, "@flt%d", indiceSimbolo);
+        }
+        else
+        {
+            printf("\nError al resolver elemento de tipo string: %s", e.valor.cad);
+            sprintf(buffer, "NULL");
+        }
     }
-    else if (e.tipo == cteEntero)
-    {
-        sprintf(buffer, "@int%d", indiceSimbolo);
-    }
-    else if (e.tipo == cteReal)
-    {
-        sprintf(buffer, "@flt%d", indiceSimbolo);
-    }
-    else
-    {
-        printf("\nError al resolver elemento de tipo string: %s", e.valor.cad);
-        sprintf(buffer, "NULL");
-    }
-
     return strdup(buffer);
 }

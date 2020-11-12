@@ -496,8 +496,6 @@ int buscarIndiceSimboloEnTablaDeSimbolosSinTabla(char *yytext)
     tLista * tablaDeSimbolosCopiaLocal = &tablaDeSimbolos;
     while(*tablaDeSimbolosCopiaLocal )
     {
-        printf("\n\n %d COMPARO %s con %s", i, yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema);
-
         if((strcmp(yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema) == 0))
         {
             return i;

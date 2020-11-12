@@ -15,26 +15,26 @@ MOV EAX, @DATA
 MOV DS, EAX
 MOV ES, EAX
 
-	FLD _85 
+	FLD @int5 
 	FSTP _nombre
 
 
 
-	FLD _0 
+	FLD @int8 
 	FSTP _contador
 
-	FLD  
+	FLD @aux6 
 	FSTP _suma
 
 TAG8:
 
 	JNBE TAG49
 
-	FLD  
+	FLD @aux11 
 	FSTP _contador
 
 
-	FLD _^‹å]Â 
+	FLD @aux14 
 	FSTP _max
 	FLD _suma 
 	FSTP _aux
@@ -44,7 +44,7 @@ TAG8:
 	FSTP _max
 
 TAG20:
-	FLD _4 
+	FLD @int16 
 	FSTP _aux
 
 	JNA TAG25
@@ -52,7 +52,7 @@ TAG20:
 	FSTP _max
 
 TAG25:
-	FLD _4 
+	FLD @int16 
 	FSTP _max1
 	FLD _actual 
 	FSTP _aux1
@@ -71,7 +71,7 @@ TAG31:
 
 TAG36:
 
-	FLD _^‹å]Â 
+	FLD @aux37 
 	FSTP _aux
 
 	JNA TAG42
@@ -81,10 +81,10 @@ TAG36:
 TAG42:
 
 
-	FLD  
+	FLD @aux44 
 	FSTP _actual
 
-	FLD  
+	FLD @aux46 
 	FSTP _suma
 	JMP TAG8
 
