@@ -30,12 +30,10 @@ indice auxindice;
 int comparar(char *yytext , tDato *dato );
 void inicializarCompilador();
 void crearTablaDeSimbolos(tLista *pl);
-indice buscarEnTablaDeSimbolos(char *yytext , tLista *tablaDeSimbolos);
 void validarExistenciaId(char *yytext, tLista * tablaDeSimbolos);
 void validarDuplicacionId(char *yytext, tLista * tablaDeSimbolos);
 indice insertarEnTablaDeSimbolos (char *yytext , tLista *tablaDeSimbolos);
 indice crearIndice(int tipoIndice, void * dato_indice);
-void cargartipoVariable(int tipo,indice ind);
 void cargarConstanteReal  (indice ind,int tipo_real);
 void cargarConstanteEntera(indice ind,int tipo_entero);
 void cargarConstanteString(indice ind,int tipo_string);
@@ -240,8 +238,7 @@ lista_expresiones: lista_expresiones COMA expresion
                 crearTercetoAsignacion(max,aux_maximo);
                 /*Avanzar*/
 
-                
-                modificarDesplazamientoTerceto(desapilar(&pilaBusquedaMaximo),obtenerIndiceTercetoSiguente());
+                modificarDesplazamientoTerceto(desapilar(&pilaBusquedaMaximo),crearTercetoTag().datoind.indiceTerceto);
 
                 apilar(&pilaMaximo, max);
 
@@ -268,7 +265,8 @@ maximo: MAXIMO  {
                {
                   max = desapilar(&pilaMaximo);
 
-                  indMaximo = crearTercetoMaximoEncontrado(max);
+                  indMaximo = buscarEnTablaDeSimbolos(max.datoind.punteroSimbolo->valor,&tablaDeSimbolos);
+                  cargartipoVariable(real,indMaximo);
                   printf("\n Regla - maximo: MAXIMO P_A lista_expresiones P_C \n");
                }
   ;
@@ -471,7 +469,7 @@ indice buscarEnTablaDeSimbolos(char *yytext, tLista * tablaDeSimbolos)
   return insertarEnTablaDeSimbolos(yytext, tablaDeSimbolos);
 }
 
-char* buscarEnTablaDeSimbolosSinTabla(char *yytext)
+char* buscarTipoEnTablaDeSimbolosSinTabla(char *yytext)
 {
     indice ind;
     tLista * tablaDeSimbolosCopiaLocal = &tablaDeSimbolos;
@@ -488,6 +486,27 @@ char* buscarEnTablaDeSimbolosSinTabla(char *yytext)
     }
 
     return SIN_RESULTADOS;
+}
+
+int buscarIndiceSimboloEnTablaDeSimbolosSinTabla(char *yytext)
+{
+    int i = 0;
+    indice ind;
+    tLista * tablaDeSimbolosCopiaLocal = &tablaDeSimbolos;
+    while(*tablaDeSimbolosCopiaLocal )
+    {
+        if((strcmp(yytext, (*tablaDeSimbolosCopiaLocal)->info.lexema) == 0))
+        {
+            return i;
+        }
+        else
+        {
+            tablaDeSimbolosCopiaLocal = &(*tablaDeSimbolosCopiaLocal)->sig;
+        }
+        i++;
+    }
+
+    return -1;
 }
 
 tDato buscarAuxEnTablaDeSimbolosSinTabla()
