@@ -34,7 +34,7 @@ TAG8:
 	FCOMP @int10 
 	FSTSW AX 
 	SAHF
-	JNBE TAG49
+	JNBE TAG47
 	FLD _contador 
 	FLD @int11 
 	FADD 
@@ -97,66 +97,64 @@ TAG31:
 	FSTP _max1
 
 TAG36:
-
-	FLD @aux37 
+	FLD _max1 
 	FSTP _aux
 	FLD _aux 
 	FCOMP _max 
 	FSTSW AX 
 	SAHF
-	JNA TAG42
+	JNA TAG41
 	FLD _aux 
 	FSTP _max
 
-TAG42:
-
+TAG41:
 	FLD @aux13 
-	FLD @aux43 
+	FLD _max 
 	FADD 
-	FSTP @aux44
-	FLD @aux44 
+	FSTP @aux42
+	FLD @aux42 
 	FSTP _actual
 	FLD _suma 
 	FLD _actual 
 	FADD 
-	FSTP @aux46
-	FLD @aux46 
+	FSTP @aux44
+	FLD @aux44 
 	FSTP _suma
 	JMP TAG8
 
-TAG49:
+TAG47:
 
 
 	FLD _actual 
 	FCOMP _nombre 
 	FSTSW AX 
 	SAHF
-	JNB TAG55
+	JNB TAG53
 
 
-TAG55:
+TAG53:
 	FLD _actual 
 	FCOMP @int14 
 	FSTSW AX 
 	SAHF
-	JNA TAG62
+	JNA TAG60
 	FLD _actual 
 	FCOMP @int8 
 	FSTSW AX 
 	SAHF
-	JE TAG62
+	JE TAG60
 
-	JMP TAG66
+	JMP TAG64
 
-TAG62:
+TAG60:
 	FLD _actual 
 	FCOMP _nombre 
 	FSTSW AX 
 	SAHF
-	JNB TAG66
+	JNB TAG64
 
 
-TAG66:
+TAG64:
 
 
 MOV EAX, 4C00h
@@ -191,7 +189,7 @@ _aux1 dd ?
 @aux11 dd ?
 @aux13 dd ?
 @aux14 dd ?
+@aux42 dd ?
 @aux44 dd ?
-@aux46 dd ?
 
 END MAIN

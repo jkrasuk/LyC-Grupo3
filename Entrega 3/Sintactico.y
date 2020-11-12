@@ -265,7 +265,8 @@ maximo: MAXIMO  {
                {
                   max = desapilar(&pilaMaximo);
 
-                  indMaximo = crearTercetoMaximoEncontrado(max);
+                  indMaximo = buscarEnTablaDeSimbolos(max.datoind.punteroSimbolo->valor,&tablaDeSimbolos);
+                  cargartipoVariable(real,indMaximo);
                   printf("\n Regla - maximo: MAXIMO P_A lista_expresiones P_C \n");
                }
   ;
