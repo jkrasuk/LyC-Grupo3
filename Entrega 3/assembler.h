@@ -124,6 +124,8 @@ void generaTablaDeSimbolos(FILE *f, tLista *tablaDeSimbolos)
 void generaCuerpo(FILE *f, tLista *tablaDeSimbolos)
 {
     int i, j;
+    char buffer[100];
+    indice indBuffer;
 
     fprintf(f, "\n.CODE\n\n");
     fprintf(f, "MAIN:\n\n");
@@ -157,14 +159,40 @@ void generaCuerpo(FILE *f, tLista *tablaDeSimbolos)
             }
             break;
         case esSuma:
+            sprintf(buffer, "@aux%d", i + 1);
+            fprintf(f, "\tFLD %s \n\tFLD %s \n\tFADD \n\tFSTP %s",
+                    resolverElemento(terceto.elementos[1]), resolverElemento(terceto.elementos[2]), buffer);
+
+            indBuffer = buscarEnTablaDeSimbolos(buffer, tablaDeSimbolos);
+            cargartipoVariable(real, indBuffer);
             break;
         case esResta:
+            sprintf(buffer, "@aux%d", i + 1);
+            fprintf(f, "\tFLD %s \n\tFLD %s \n\tFSUB \n\tFSTP %s",
+                    resolverElemento(terceto.elementos[1]), resolverElemento(terceto.elementos[2]), buffer);
+
+            indBuffer = buscarEnTablaDeSimbolos(buffer, tablaDeSimbolos);
+            cargartipoVariable(real, indBuffer);
             break;
         case esMultiplicacion:
+            sprintf(buffer, "@aux%d", i + 1);
+            fprintf(f, "\tFLD %s \n\tFLD %s \n\tFMUL \n\tFSTP %s",
+                    resolverElemento(terceto.elementos[1]), resolverElemento(terceto.elementos[2]), buffer);
+
+            indBuffer = buscarEnTablaDeSimbolos(buffer, tablaDeSimbolos);
+            cargartipoVariable(real, indBuffer);
             break;
         case esDivision:
+            sprintf(buffer, "@aux%d", i + 1);
+            fprintf(f, "\tFLD %s \n\tFLD %s \n\tFDIV \n\tFSTP %s",
+                    resolverElemento(terceto.elementos[1]), resolverElemento(terceto.elementos[2]), buffer);
+
+            indBuffer = buscarEnTablaDeSimbolos(buffer, tablaDeSimbolos);
+            cargartipoVariable(real, indBuffer);
             break;
         case esComparacion:
+            fprintf(f, "\tFLD %s \n\tFCOMP %s \n\tFSTSW AX \n\tSAHF",
+                    resolverElemento(terceto.elementos[1]), resolverElemento(terceto.elementos[2]));
             break;
         case esUnDesplazamiento:
             salto = terceto.elementos[0].valor.cad;
@@ -194,7 +222,7 @@ void generaCuerpo(FILE *f, tLista *tablaDeSimbolos)
         fprintf(stdout, "%d: (", i + 1);
 
         for (j = 0; j < 3; j++) {
-            elemento e = t.elementos[j];
+            elemento e = terceto.elementos[j];
 
             switch (e.tipo) {
                 case string:
@@ -235,7 +263,7 @@ char *resolverElemento(elemento e)
     }
     else if (e.tipo == string)
     {
-        if (strcmp(tipoSimbolo, "STRING") == 0 || strcmp(tipoSimbolo, "INTEGER") == 0 || strcmp(tipoSimbolo, "FLOAT") == 0|| strcmp(tipoSimbolo, "CONST") == 0)
+        if (strcmp(tipoSimbolo, "STRING") == 0 || strcmp(tipoSimbolo, "INTEGER") == 0 || strcmp(tipoSimbolo, "FLOAT") == 0 || strcmp(tipoSimbolo, "CONST") == 0)
         {
             sprintf(buffer, "%s", e.valor.cad);
         }

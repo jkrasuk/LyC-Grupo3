@@ -77,6 +77,8 @@ indice crearTercetoMaximo();
 int obtenerIndiceTercetoSiguente();
 void imprimirTercetos();
 void negarTerceto(int);
+indice buscarEnTablaDeSimbolos(char *yytext , tLista *tablaDeSimbolos);
+void cargartipoVariable(int tipo,indice ind);
 
 /* Índice global para tercetos */
 int indTercetos = 0;

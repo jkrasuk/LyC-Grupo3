@@ -21,3 +21,9 @@ _aux1                                   	FLOAT     	aux1                        
 _"La suma es: "                         	CTE_STRING	"La suma es: "                          	14   
 _"no es mayor que 2"                    	CTE_STRING	"no es mayor que 2"                     	19   
 _"actual  > que 2 y <> de cero"         	CTE_STRING	"actual  > que 2 y <> de cero"          	30   
+_@aux6                                  	FLOAT     	@aux6                                   	-    
+_@aux11                                 	FLOAT     	@aux11                                  	-    
+_@aux13                                 	FLOAT     	@aux13                                  	-    
+_@aux14                                 	FLOAT     	@aux14                                  	-    
+_@aux44                                 	FLOAT     	@aux44                                  	-    
+_@aux46                                 	FLOAT     	@aux46                                  	-    
