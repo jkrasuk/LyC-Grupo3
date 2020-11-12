@@ -19,9 +19,10 @@ void generaAssembler(tLista * tablaDeSimbolos) {
     }
 
     generaHeader(f);
-    generaTablaDeSimbolos(f, tablaDeSimbolos);
     generaCuerpo(f);
-    
+    // Pongo la tabla de simbolos despues del cuerpo ya que puedo tener auxiliares que no se tuvieron en cuenta en GCI
+    generaTablaDeSimbolos(f, tablaDeSimbolos);
+
     if (fclose(f) != 0) {
         printf("No se puede cerrar el archivo Final.asm");
         exit(1);
@@ -95,7 +96,7 @@ void generaTablaDeSimbolos(FILE* f, tLista * tablaDeSimbolos) {
                 break;
             case cteString:
                 fprintf(f, "@str%d ", i);
-                fprintf(f, "db \"%s\", \"$\", %d dup (?)", (*tablaDeSimbolos)->info.valor, LIMITE_STRINGS);
+                fprintf(f, "db %s, \"$\", %d dup (?)", (*tablaDeSimbolos)->info.valor, LIMITE_STRINGS);
                 fprintf(f, "\n");
                 break;
             default:
@@ -104,9 +105,13 @@ void generaTablaDeSimbolos(FILE* f, tLista * tablaDeSimbolos) {
         tablaDeSimbolos = &(*tablaDeSimbolos)->sig;
         i++;
     }
+
+    fprintf(f, "\nEND MAIN\n");
 }
 
 void generaCuerpo(FILE* f) {
+	int i,j;
+
     fprintf(f, "\n.CODE\n\n");
     fprintf(f, "MAIN:\n\n");
     fprintf(f, "MOV EAX, @DATA\n");
@@ -114,8 +119,74 @@ void generaCuerpo(FILE* f) {
     fprintf(f, "MOV ES, EAX\n\n");
 
     // Aca van los tercetos
+    for (i = 0; i < indTercetos; i++) {
+        terceto terceto = tercetos[i];
+        char* salto, *etiqueta, *str, *strSimbolo;
+        int indEtiqueta, indSimbolo;
 
-    fprintf(f, "\n");
+        switch(terceto.tipoTerc){
+        	case esAsignacion:
+        		break;
+		    case esSuma:
+		    	break;
+		    case esResta:
+		    	break;
+		    case esMultiplicacion:
+		    	break;
+		    case esDivision:
+		    	break;
+		    case esComparacion:
+		    	break;
+		    case esUnDesplazamiento:
+                salto = terceto.elementos[0].valor.cad;
+                indEtiqueta = terceto.elementos[1].valor.ind;
+                etiqueta = tercetos[indEtiqueta].elementos[0].valor.cad;
+                fprintf(f, "\t%s %s", salto, etiqueta);
+		    	break;
+		    case esMaximoEncontrado:
+		    	break;
+		    case esMaximo:
+		    	break;
+		    case esGet:
+		    	break;
+		    case esPut:
+		    	break;
+		    case esDesconocido:
+		    	break;
+		    case esEtiqueta:
+                fprintf(f, "\n%s:", terceto.elementos[0].valor.cad);
+		    	break;
+		    default:
+		    	break;
+        }
+        fprintf(f, "\n");
+        // PRINTFs para debug
+        /*
+        fprintf(stdout, "%d: (", i + 1);
+
+        for (j = 0; j < 3; j++) {
+            elemento e = t.elementos[j];
+
+            switch (e.tipo) {
+                case string:
+                    fprintf(stdout, "%s", e.valor.cad);
+                    break;
+                case entero:
+                    fprintf(stdout, "[%d]", e.valor.ind + 1);
+                    break;
+                default:
+                    fprintf(stdout, "_");
+            }
+
+            if (j < 2) {
+                fprintf(stdout, ", ");
+            } 
+        }
+        fprintf(stdout, ")");
+        fprintf(stdout, "\n");
+        */
+    }
+    fprintf(f, "\n\n");
     fprintf(f, "MOV EAX, 4C00h\n");
     fprintf(f, "INT 21h\n\n");
     fprintf(f, "\n");

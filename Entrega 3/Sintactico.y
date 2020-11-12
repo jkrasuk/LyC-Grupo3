@@ -233,7 +233,7 @@ lista_expresiones: lista_expresiones COMA expresion
                 /*Insertamos el resultado que trae expresion en aux_maximo*/
 
                 /*Apilar*/
-                apilar(&pilaBusquedaMaximo,crearTercetoDesplazamiento("BLE",0));
+                apilar(&pilaBusquedaMaximo,crearTercetoDesplazamiento("JNA",0));
                 /*Apilar*/ 
 
                 /*Avanzar*/ 
@@ -311,7 +311,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento("BNE",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("JNE",0));
   /*Apilar*/ 
 } 
 | expresion { indExprAux = indExpr; } DISTINTO expresion {
@@ -319,7 +319,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento("BEQ",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("JE",0));
   /*Apilar*/ 
 }
 | expresion { indExprAux = indExpr; } MAYOR expresion {
@@ -327,7 +327,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento("BLE",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("JNA",0));
   /*Apilar*/ 
 } 
 | expresion { indExprAux = indExpr; } MENOR expresion {
@@ -335,7 +335,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento("BGE",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("JNB",0));
   /*Apilar*/ 
 }
 | expresion { indExprAux = indExpr; } MAYOR_IGUAL expresion {
@@ -343,7 +343,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento("BLT",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("JNAE",0));
   /*Apilar*/ 
 } 
 | expresion { indExprAux = indExpr; } MENOR_IGUAL expresion {
@@ -351,7 +351,7 @@ comparacion: expresion { indExprAux = indExpr; } IGUAL expresion {
   indComp = crearTercetoComparacion(indExprAux, indExpr); 
 
   /*Apilar*/
-  apilar(&pilaCond, crearTercetoDesplazamiento("BGT",0));
+  apilar(&pilaCond, crearTercetoDesplazamiento("JNBE",0));
   /*Apilar*/ 
 };
 

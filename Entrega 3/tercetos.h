@@ -466,23 +466,23 @@ indice crearTercetoTag() {
 }
 /* Niega la la condicion de un terceto */
 void negarTerceto(int numeroTerceto) {
-	if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BGE") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = "BLT";
+	if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "JNB") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "JNAE";
 	 
-	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BGT") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = "BLE";
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "JNBE") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "JNA";
 	 
-	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BLE") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = "BGT";
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "JNA") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "JNBE";
 	 
-	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BLT") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = "BGE";
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "JNAE") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "JNB";
 	 
-	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BNE") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = "BEQ";
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "JNE") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "JE";
 	 
-	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "BEQ") == 0)
-		 tercetos[numeroTerceto].elementos[0].valor.cad = "BNE";
+	 else if(strcmp(tercetos[numeroTerceto].elementos[0].valor.cad, "JE") == 0)
+		 tercetos[numeroTerceto].elementos[0].valor.cad = "JNE";
 }
 
 tipoValor obtenerTipoSimbolo(char * tipo){
