@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <string.h>
 #include "tercetos.h"//incluye a tools.h
+#define LIMITE_STRINGS 30
 
 void generaAssembler(tLista * tablaDeSimbolos);
 void generaHeader(FILE*);
@@ -40,37 +41,73 @@ void generaHeader(FILE* f) {
 }
 
 void generaTablaDeSimbolos(FILE* f, tLista * tablaDeSimbolos) {
+	int i = 0;
+    char resultado[20] = "";
     fprintf(f, ".DATA\n\n");
-    printf("INICIO\n");
+
     while(*tablaDeSimbolos )
     {
-    // Recorrer la tabla de simbolos
         float val;
-        printf("\n\n %s ", (*tablaDeSimbolos)->info.lexema);
         switch(obtenerTipoSimbolo((*tablaDeSimbolos)->info.tipo)) {
             case string:
                 fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
-                fprintf(f, "db %d dup (?), \"$\"", 30);
+                fprintf(f, "db %d dup (?), \"$\"", LIMITE_STRINGS);
+                fprintf(f, "\n");
                 break;
             case entero:
                 fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
                 fprintf(f, "dd ?");
+                fprintf(f, "\n");
                 break;
             case real:
                 fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
                 fprintf(f, "dd ?");
+                fprintf(f, "\n");
                 break;
-                default: break;
-        }
-        fprintf(f, "\n");
-        tablaDeSimbolos = &(*tablaDeSimbolos)->sig;
-    }
+            /*case constante:
+                fprintf(f, "%s ", (*tablaDeSimbolos)->info.valor);
 
-    printf("TERMINE\n");
+                // Recupero el tipo de la constante
+				strcpy(resultado, buscarEnTablaDeSimbolosSinTabla(obtenerValorTerceto((*tablaDeSimbolos)->info.lexema)));
+			
+				if(strcmp(resultado, "CTE_FLOAT") == 0){
+		            val = atof((*tablaDeSimbolos)->info.valor);
+            		fprintf(f, "dd %f", val);
+		        } else if(strcmp(resultado, "CTE_INTEGER") == 0){
+		            val = atof((*tablaDeSimbolos)->info.valor);
+                	fprintf(f, "dd %f", val);
+		        } else if(strcmp(resultado, "CTE_STRING") == 0){
+			         fprintf(f, "db \"%s\", \"$\", %d dup (?)", (*tablaDeSimbolos)->info.valor, LIMITE_STRINGS);
+		        }
+
+                break;*/
+            case cteEntero:
+                fprintf(f, "@int%d ", i);
+                val = atof((*tablaDeSimbolos)->info.valor);
+                fprintf(f, "dd %f", val);
+                fprintf(f, "\n");
+                break;
+            case cteReal:
+                fprintf(f, "@flt%d ", i);
+                val = atof((*tablaDeSimbolos)->info.valor);
+                fprintf(f, "dd %f", val);
+                fprintf(f, "\n");
+                break;
+            case cteString:
+                fprintf(f, "@str%d ", i);
+                fprintf(f, "db \"%s\", \"$\", %d dup (?)", (*tablaDeSimbolos)->info.valor, LIMITE_STRINGS);
+                fprintf(f, "\n");
+                break;
+            default:
+            	break;
+        }
+        tablaDeSimbolos = &(*tablaDeSimbolos)->sig;
+        i++;
+    }
 }
 
 void generaCuerpo(FILE* f) {
-    fprintf(f, ".CODE\n\n");
+    fprintf(f, "\n.CODE\n\n");
     fprintf(f, "MAIN:\n\n");
     fprintf(f, "MOV EAX, @DATA\n");
     fprintf(f, "MOV DS, EAX\n");
