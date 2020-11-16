@@ -118,8 +118,10 @@ void validarLimitesConstanteReal()
 
 void validarLimitesConstanteInt() 
 {
-	if (atoi(yytext) < 0 || atoi(yytext) > 32767) 
-	{
+	int entero;
+    sscanf(yytext,"%d",&entero);
+
+	if(!(entero >= -32768 && entero <= 32767)){
 		printf("Valor maximo excedido en linea %d\n", yylineno);
 		exit(1);
 	}
