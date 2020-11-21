@@ -243,7 +243,6 @@ void generaCuerpo(FILE *f, tLista *tablaDeSimbolos)
             break;
         case esPut:
             strcpy(resultado, buscarTipoEnTablaDeSimbolosSinTabla(terceto.elementos[1].valor.cad));
-            printf("\n * %s para %s *\n ", resultado, terceto.elementos[1].valor.cad);
 
             if (strcmp(resultado, "STRING") == 0 || strcmp(resultado, "CTE_STRING") == 0)
             {

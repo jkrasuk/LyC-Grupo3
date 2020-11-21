@@ -669,7 +669,7 @@ void validarDuplicacionId(char *yytext, tLista * tablaDeSimbolos)
 void validarVariables() {
 
     if(cantVariables == cantTipoVariables) {
-      printf("\nCantidad correcta de variables y tipos\n");
+      // printf("\nCantidad correcta de variables y tipos\n");
     } else {
       printf("\nCantidad incorrecta de variables y tipos\n");
       exit(1);
