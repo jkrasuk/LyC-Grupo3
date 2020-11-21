@@ -17,9 +17,11 @@ MOV ES, EAX
 
 	FLD @int5 
 	FSTP _nombre
-
-
-
+	displayString @str6
+	newLine
+	displayString @str7
+	newLine
+	GetFloat _actual
 	FLD @int8 
 	FSTP _contador
 	FLD @flt9 
@@ -123,14 +125,17 @@ TAG41:
 	JMP TAG8
 
 TAG47:
-
-
+	displayString @str19
+	newLine
+	DisplayFloat _suma, 2
+	newLine
 	FLD _actual 
 	FCOMP _nombre 
 	FSTSW AX 
 	SAHF
 	JNB TAG53
-
+	displayString @str20
+	newLine
 
 TAG53:
 	FLD _actual 
@@ -143,7 +148,8 @@ TAG53:
 	FSTSW AX 
 	SAHF
 	JE TAG60
-
+	displayString @str21
+	newLine
 	JMP TAG64
 
 TAG60:
@@ -152,7 +158,8 @@ TAG60:
 	FSTSW AX 
 	SAHF
 	JNB TAG64
-
+	displayString @str20
+	newLine
 
 TAG64:
 

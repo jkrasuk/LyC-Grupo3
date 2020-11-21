@@ -224,18 +224,70 @@ void generaCuerpo(FILE *f, tLista *tablaDeSimbolos)
             etiqueta = tercetos[indEtiqueta].elementos[0].valor.cad;
             fprintf(f, "\t%s %s", salto, etiqueta);
             break;
+
+        case esGet:
+            strcpy(resultado, buscarTipoEnTablaDeSimbolosSinTabla(terceto.elementos[1].valor.cad));
+
+            if (strcmp(resultado, "STRING") == 0)
+            {
+                fprintf(f, "\tgetString %s", resolverElemento(terceto.elementos[1]));
+            }
+            else if (strcmp(resultado, "FLOAT") == 0 || strcmp(resultado, "INTEGER") == 0)
+            {
+                fprintf(f, "\tGetFloat %s", resolverElemento(terceto.elementos[1]));
+            }
+            else
+            {
+                printf("\nError al generar Get de: %s", resolverElemento(terceto.elementos[1]));
+            }
+            break;
+        case esPut:
+            strcpy(resultado, buscarTipoEnTablaDeSimbolosSinTabla(terceto.elementos[1].valor.cad));
+            printf("\n * %s para %s *\n ", resultado, terceto.elementos[1].valor.cad);
+
+            if (strcmp(resultado, "STRING") == 0 || strcmp(resultado, "CTE_STRING") == 0)
+            {
+                fprintf(f, "\tdisplayString %s\n", resolverElemento(terceto.elementos[1]));
+                fprintf(f, "\tnewLine");
+            }
+            else if (strcmp(resultado, "FLOAT") == 0 || strcmp(resultado, "CTE_FLOAT") == 0 || strcmp(resultado, "INTEGER") == 0 || strcmp(resultado, "CTE_INTEGER") == 0)
+            {
+                fprintf(f, "\tDisplayFloat %s, 2\n", resolverElemento(terceto.elementos[1]));
+                fprintf(f, "\tnewLine");
+            }
+            else if (strcmp(resultado, "CONST") == 0)
+            {
+                // Recupero el tipo de la constante
+                strcpy(resultado, buscarTipoEnTablaDeSimbolosSinTabla(obtenerValorTerceto(terceto.elementos[1].valor.cad)));
+
+                if (strcmp(resultado, "STRING") == 0 || strcmp(resultado, "CTE_STRING") == 0)
+                {
+                    fprintf(f, "\tdisplayString %s\n", resolverElemento(terceto.elementos[1]));
+                    fprintf(f, "\tnewLine");
+                }
+                else if (strcmp(resultado, "FLOAT") == 0 || strcmp(resultado, "CTE_FLOAT") == 0 || strcmp(resultado, "INTEGER") == 0 || strcmp(resultado, "CTE_INTEGER") == 0)
+                {
+                    fprintf(f, "\tDisplayFloat %s, 2\n", resolverElemento(terceto.elementos[1]));
+                    fprintf(f, "\tnewLine");
+                }
+                else
+                {
+                    printf("\nError al generar Put de: %s", resolverElemento(terceto.elementos[1]));
+                }
+            }
+            else
+            {
+                printf("\nError al generar Put de: %s", resolverElemento(terceto.elementos[1]));
+            }
+            break;
+        case esEtiqueta:
+            fprintf(f, "\n%s:", terceto.elementos[0].valor.cad);
+            break;
         case esMaximoEncontrado:
             break;
         case esMaximo:
             break;
-        case esGet:
-            break;
-        case esPut:
-            break;
         case esDesconocido:
-            break;
-        case esEtiqueta:
-            fprintf(f, "\n%s:", terceto.elementos[0].valor.cad);
             break;
         default:
             break;

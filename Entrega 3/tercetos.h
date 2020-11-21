@@ -77,8 +77,8 @@ indice crearTercetoMaximo();
 int obtenerIndiceTercetoSiguente();
 void imprimirTercetos();
 void negarTerceto(int);
-indice buscarEnTablaDeSimbolos(char *yytext , tLista *tablaDeSimbolos);
-void cargartipoVariable(int tipo,indice ind);
+indice buscarEnTablaDeSimbolos(char *yytext, tLista *tablaDeSimbolos);
+void cargartipoVariable(int tipo, indice ind);
 
 /* Índice global para tercetos */
 int indTercetos = 0;
@@ -441,12 +441,16 @@ indice crearTercetoMaximoEncontrado(indice max)
 
 indice crearTercetoGetID(const char *val)
 {
-    return crearTerceto(crearElemStr("GET"), crearElemStr(val), crearElemNull(), indefinido, esGet);
+    char buffer[900];
+    sprintf(buffer, "_%s", val);
+    return crearTerceto(crearElemStr("GET"), crearElemStr(buffer), crearElemNull(), indefinido, esGet);
 }
 
 indice crearTercetoPut(const char *val)
 {
-    return crearTerceto(crearElemStr("PUT"), crearElemStr(val), crearElemNull(), indefinido, esPut);
+    char buffer[900];
+    sprintf(buffer, "_%s", val);
+    return crearTerceto(crearElemStr("PUT"), crearElemStr(buffer), crearElemNull(), indefinido, esPut);
 }
 
 indice crearTercetoPutReal(float val)
@@ -459,7 +463,7 @@ indice crearTercetoPutReal(float val)
 indice crearTercetoPutString(const char *val)
 {
     char buffer[900];
-    sprintf(buffer, "%s", val);
+    sprintf(buffer, "_%s", val);
     return crearTerceto(crearElemStr("PUT"), crearElemStr(buffer), crearElemNull(), indefinido, esPut);
 }
 
