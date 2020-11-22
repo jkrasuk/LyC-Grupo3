@@ -17,7 +17,7 @@ void validarID();
 DIGITO									[0-9]
 LETRA									[a-zA-Z]
 DELIM									[ \t\n\r]
-CARACTER								[a-z|A-Z|0-9|=|>|<|!|:|+|-|*|/|?|¿|!|¡|@|%|#|&|°|´|^|`|~|/|\\|-|_|.|,|;|¬||]
+CARACTER								[a-z|A-Z|0-9|=|>|<|!|:|+|-|*|/|?|¿|!|¡|@|%|#|&|°|´|^|`|~|/|\\|(|)|\-|_|.|,|;|¬||]
 VALID_STRING							({CARACTER}+|{DELIM})*
 COMENTARIO								\*-.({CARACTER}|{DELIM})*.
 COMENTARIO_ANIDADO                      {COMENTARIO}({COMENTARIO}-\*)?.-\*

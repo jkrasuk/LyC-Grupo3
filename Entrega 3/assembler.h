@@ -171,8 +171,9 @@ void generaCuerpo(FILE *f, tLista *tablaDeSimbolos)
 
             if (strcmp(resultado, "STRING") == 0)
             {
-                strcpy(resultado, buscarTipoEnTablaDeSimbolosSinTabla(terceto.elementos[2].valor.cad));
-                fprintf(f, "\tMOV  SI, OFFSET @str%d \n", resultado);
+                int num = buscarIndiceSimboloEnTablaDeSimbolosSinTabla(terceto.elementos[2].valor.cad);
+
+                fprintf(f, "\tMOV  SI, OFFSET @str%d \n", num);
                 fprintf(f, "\tMOV  DI, OFFSET %s \n", resolverElemento(terceto.elementos[1]));
                 fprintf(f, "\tSTRCPY");
             }
